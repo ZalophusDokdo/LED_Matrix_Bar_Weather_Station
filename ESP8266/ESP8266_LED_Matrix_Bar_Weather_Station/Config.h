@@ -53,9 +53,9 @@
 // LED Matrix Bar ==========================================================
 // CHANGE YOUR CONFIG HERE: Weather Host http://api.openweathermap.org
 // =========================================================================
-#define  WEATHER_KEY          "5dc91881c3a26336a86a52add18ee869"              // API Key
+#define  WEATHER_KEY          " "              // API Key
 #define  WEATHER_LANG         "&lang=en"       // "&lang=en" English
-#define  CITY_ID              "1846898"              // City ID Number http://openweathermap.org/help/city_list.txt
+#define  CITY_ID              " "              // City ID Number http://openweathermap.org/help/city_list.txt
 // read OpenWeather api description for more info
 #define  NUM_MAX              14               // Number of MAX7219's connected
 #define  MAX_DIGITS           16
