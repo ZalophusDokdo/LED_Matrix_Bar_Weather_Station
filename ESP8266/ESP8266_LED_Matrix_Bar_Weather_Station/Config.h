@@ -57,7 +57,7 @@
 #define  WEATHER_LANG         "&lang=en"       // "&lang=en" English
 #define  CITY_ID              " "              // City ID Number http://openweathermap.org/help/city_list.txt
 // read OpenWeather api description for more info
-#define  NUM_MAX              14               // Number of MAX7219's connected
+#define  NUM_MAX               6               // Number of MAX7219's connected
 #define  MAX_DIGITS           16
 #define  SET_INTENSITY         3               // Initial led matrix intensity, 0-15
 #define  UTC_OFFSET            9               // UTC+9 
