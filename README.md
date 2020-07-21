@@ -1,9 +1,8 @@
 # ESP8266_LED_Matrix_Bar_Weather_Station
 ESP8266 LED Matrix Bar Weather Station and Clock Massenger
 
-===================================================
 Configuring the upload environment
-===================================================
+==================================
 How to configure standard Arduino IDE to use as Arduino ESP8266 IDE.
 First download Arduino IDE and install it on computer.
 IMPORTANT: Download old version Arduino IDE Version 1.8.1.
@@ -29,4 +28,3 @@ After install select ESP9266 board.
 - CPU Frequency: "80 MHz"
 - Flash Size: "4M (3M SPIFFS)"
 - Port: COM?? 
-===================================================
