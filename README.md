@@ -9,7 +9,7 @@ IMPORTANT: Download old version Arduino IDE Version 1.8.1.
 (Tested Version 1.8.9 and Version 1.8.13)
 
 Open Arduino IDE and go to File - Preferences.
-Enter http://arduino.esp8266.com/stable/pac... under Adittional boards manager.
+Enter http://arduino.esp8266.com/stable/package_esp8266com_index.json under Adittional boards manager.
 
 Select Boards Manager in Tools - Board
 Find ESP8266 and press Install
