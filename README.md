@@ -39,3 +39,13 @@ After install select ESP9266 board.
 - CPU Frequency: "80 MHz"
 - Flash Size: "4M (3M SPIFFS)"
 - Port: COM?? 
+
+---------------
+Schematic is available here:
+- Normal: https://easyeda.com/neoseven/led-matrix-bar-weather-station-normal
+- Expansion: https://easyeda.com/neoseven/led-matrix-bar-weather-station (Unfinished - Future plans)
+
+---------------
+3D Parts:
+- Pinshape : https://pinshape.com/items/46659-3d-printed-led-matrix-bar-weather-station-v1
+- Thingiverse : https://www.thingiverse.com/thing:2650808
