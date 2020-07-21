@@ -1,4 +1,4 @@
-# ESP8266_LED_Matrix_Bar_Weather_Station
+# ESP8266 LED Matrix Bar Weather Station
 ESP8266 LED Matrix Bar Weather Station and Clock Massenger
 
 Configuring the upload environment
