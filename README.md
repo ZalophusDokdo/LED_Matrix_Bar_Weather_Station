@@ -1,6 +1,27 @@
 # ESP8266 LED Matrix Bar Weather Station
 ESP8266 LED Matrix Bar Weather Station and Clock Massenger
 
+Features:
+-
+- ESP8266 WeMos D1 mini module which I finally found good application for (now you can buy better cheap ESPs)
+- 6 x LEDMatrix module with MAX7219 driver
+- supplied directly from USB port with USB plug
+- all data are synchronized every 7-8 minutes
+- time and date are taken from google.com
+- weather informations are grabbed from openweather.org JSON api
+- no hardware RTC clock is necessary
++ internal temperature, humidity sensor (options - DS18B20(Internal), DHT22(Indoor), DHT12(Outdoor))
++ ESP8266 setup and control as a Wi-Fi Web Server (WiFiManager, OTA, mDNS)
++ receives a message input from a User Input page, then displays the message on a scrolling LED matrix display.
+
+* The interface for all the controls is designed as a webapp for internet browser.
+
+BOM
+-
+- 6 x MAX7219 8 x 8 LED Matrix module
+- 1 x WeMos D1 mini
+- 1 x Interface Shield
+
 Configuring the upload environment
 ==================================
 How to configure standard Arduino IDE to use as Arduino ESP8266 IDE.
