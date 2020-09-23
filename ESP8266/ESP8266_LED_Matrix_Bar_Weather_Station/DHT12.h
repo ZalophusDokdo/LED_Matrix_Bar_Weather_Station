@@ -1,9 +1,9 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
  *  DHT12 temperature and humidity sensor
  *  MIT license
@@ -141,12 +141,9 @@ private:
 	bool _isOneWire = false;
 
 	uint8_t data[5];
-	uint8_t _address = DEFAULT_DHT12_ADDRESS
-	;
-	uint8_t _sda = DEFAULT_SDA
-	;
-	uint8_t _scl = DEFAULT_SCL
-	;
+	uint8_t _address = DEFAULT_DHT12_ADDRESS;
+	uint8_t _sda = DEFAULT_SDA;
+	uint8_t _scl = DEFAULT_SCL;
 
 	uint32_t _lastreadtime = 0;
 	ReadStatus _lastresult = NONE;
@@ -162,7 +159,6 @@ private:
 	ReadStatus _checksum(void);
 	uint32_t expectPulse(bool level);
 	ReadStatus _readSensor(uint8_t wakeupDelay, uint8_t leadingZeroBits);
-
 };
 
 /*
@@ -175,7 +171,6 @@ public:
 	~InterruptLock() {
 		interrupts();
 	}
-
 };
 //##################################################################
 */
