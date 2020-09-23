@@ -1,3 +1,17 @@
+/* =========================================================================
+ *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
+ *  License: GPL v2
+ * =========================================================================
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
+ * =========================================================================
+ *  LED Matrix Font
+ * =========================================================================
+ */
+
+#ifndef FONT_H
+#define FONT_H
+
 const uint8_t dig3x8[] PROGMEM = { 4,
 0x03, 0xFF, 0x81, 0xFF,
 0x02, 0x02, 0xFF, 0x00,
@@ -249,3 +263,4 @@ const uint8_t font[] PROGMEM = {6,
 3, B00000010, B00000101, B00000010, B00000000, B00000000, // deg
 };
 
+#endif
