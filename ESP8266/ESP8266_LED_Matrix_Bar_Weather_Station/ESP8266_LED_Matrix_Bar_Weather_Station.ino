@@ -23,13 +23,15 @@
  *  - 1 x WeMos D1 mini
  *  - 1 x Interface shield
  *  Additional Parts:
- *  - N x DS18B20 temperature sensor
- *  - 1 x DHT22 temperature and humidity sensor
- *  - 1 x DHT12 temperature and humidity sensor
- *  - N x WS2812B RGB LED
- *  - 1 x Push button switch
- *  - 1 x On/Off button switxh
- *  - 1 x Power On/Off switxh
+ *  - 1 x DS18B20 temperature sensor (Option)
+ *  - 1 x DHT22 temperature and humidity sensor (Option)
+ *  - 1 x DHT12 temperature and humidity sensor (Option)
+ *  - N x WS2812B RGB LED (Option)
+ *  - 1 x Alarm On/Off button switch
+ *  - 1 x Lamp Push button switch
+ *  - 1 x Scroll Push button switch
+ *  - 1 x Power On/Off switch
+ *  - 1 x Buzzer
  * -------------------------------------------------------------------------
  *  Fuctions:
  *  - OTA
@@ -252,12 +254,12 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
   }
   if (digitalRead(GREEN_PIN)) {  // Lamp Push Button Switch
 #ifdef   USE_RELAY_PIN
-          pinMode(WHITE_PIN, OUTPUT);
-          digitalWrite(WHITE_PIN,  HIGH);
+      pinMode(USE_RELAY_PIN, OUTPUT);
+      digitalWrite(USE_RELAY_PIN,  HIGH);
 #endif
-#ifdef   USE_RELAY_PIN
-          pinMode(WHITE_PIN, OUTPUT);
-          digitalWrite(WHITE_PIN,  HIGH);
+#ifdef   USE_LED_PIN
+      pinMode(USE_LED_PIN, OUTPUT);
+      digitalWrite(USE_LED_PIN,  HIGH);
 #endif
 #ifdef   USE_RGB_LED && USE_RGB_LED_PIN
       //colorWipe(strip.Color(255,   0,   0), 10);     // Red
@@ -317,10 +319,10 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
   }
   if (!digitalRead(GREEN_PIN)) {  // Lamp Push Button Switch
 #ifdef   USE_RELAY_PIN
-          digitalWrite(WHITE_PIN,  LOW);
+      digitalWrite(USE_RELAY_PIN,  LOW);
 #endif
-#ifdef   USE_RELAY_PIN
-          digitalWrite(WHITE_PIN,  LOW);
+#ifdef   USE_LED_PIN
+      digitalWrite(USE_LED_PIN,  LOW);
 #endif
 #ifdef   USE_RGB_LED
     colorWipe(strip.Color(  0,   0,   0),  0);
