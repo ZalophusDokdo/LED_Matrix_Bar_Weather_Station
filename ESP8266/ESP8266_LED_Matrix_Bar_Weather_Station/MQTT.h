@@ -16,10 +16,10 @@
 #include "Adafruit_MQTT_Client.h"
 
 /************************* Adafruit.io Setup *********************************/
-#define AIO_SERVER      "io.adafruit.com"
-#define AIO_SERVERPORT  1883                                // use 1883 for SSL
-#define AIO_USERNAME    " "                          // Replace it with your username
-#define AIO_KEY         " "  // Replace with your Project Auth Key
+//#define AIO_SERVER      "io.adafruit.com"
+//#define AIO_SERVERPORT  1883  // use 1883 for SSL
+//#define AIO_USERNAME    " "   // Replace it with your username
+//#define AIO_KEY         " "   // Replace with your Project Auth Key
 /************************* Adafruit.io ***************************************/
 // WiFi Client
 //WiFiClient client;
