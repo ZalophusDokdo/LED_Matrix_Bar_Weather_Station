@@ -1,13 +1,14 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  WeMos D1 mini WiFi Manager
+ *  WiFi Manager
  * =========================================================================
  */
+
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
 
@@ -19,7 +20,7 @@ uint8_t    MAC_array[6];                  // MAC address of Wifi module
 char       MAC_char[18];
 char       *APname;
 
-void wifimanager_start() {
+void WiFiManager_setup() {
   // Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
   // exit after config instead of connecting
