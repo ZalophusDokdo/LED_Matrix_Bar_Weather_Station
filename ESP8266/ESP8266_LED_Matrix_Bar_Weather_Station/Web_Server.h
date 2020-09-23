@@ -1,31 +1,36 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  WeMos D1 mini Web Server
+ *  Web Server
  * =========================================================================
  */
+
 #ifndef WEB_SERVER_H
 #define WEB_SERVER_H
 
 #include <ESP8266WebServer.h>
 
-ESP8266WebServer server(80);  // Set the port you wish to use, a browser default is 80, but any port can be used, if you set it to 5555 then connect with http://nn.nn.nn.nn:5555/
+// Set the port you wish to use, a browser default is 80, but any port can be used, if you set it to 5555 then connect with http://nn.nn.nn.nn:5555/
+ESP8266WebServer server(80);
 
-int OTAmode              =   OTA_MODE;
-int ledMatrix            =   LED_MATRIX;
-int gclockWeatherScroll  =   GCLOCK_WEATHER_SCROLL;
-int gClock               =   GCLOCK;
-int dateScroll           =   DATE_SCROLL;
-int weatherScroll        =   WEATHER_SCROLL;
-int indoor               =   INDOOR;
-int outdoor              =   OUTDOOR;
-int indoorScroll         =   INDOOR_SCROLL;
-int outdoorScroll        =   OUTDOOR_SCROLL;
-int waitScroll           =   WAIT_SCROLL;
+String webTitle          = WEB_TITLE;
+String webSubTitle       = WEB_SUBTITLE;
+int    webPageRefresh    = WEB_PAGE_REFRESH;
+
+int    OTAmode           = OTA_MODE;
+int    ledMatrix         = LED_MATRIX;
+int    Clock             = CLOCK;
+int    dateScroll        = DATE_SCROLL;
+int    weatherScroll     = WEATHER_SCROLL;
+int    indoor            = INDOOR;
+int    outdoor           = OUTDOOR;
+int    indoorScroll      = INDOOR_SCROLL;
+int    outdoorScroll     = OUTDOOR_SCROLL;
+int    waitScroll        = WAIT_SCROLL;
 
 extern "C" {
   uint16 readvdd33(void);
@@ -35,21 +40,32 @@ String deg               = String(char('~'+25));
 String webpage           = "";
 String printMsg;
 
+int    onTimeAlarm = 0;
+int    alarm_state = ALARM_STATE;
+int    alarm_h_set = ALARM_H_SET;
+int    alarm_m_set = ALARM_M_SET;
+String alarm_ampm_select = "AM";
+
 void append_webpage_header() {
   // webpage is a global variable
   webpage = ""; // A blank string variable to hold the web page
-  webpage += "<!DOCTYPE HTML> ";
-  webpage += "<html> ";
-  webpage += "<head> ";
-  //webpage += "<meta http-equiv='refresh' content='300;url='/'' />";  // 300 = 5 min
+  webpage += "<!DOCTYPE HTML>";
+  webpage += "<html>";
+  webpage += "<head>";
+  webpage += "<meta http-equiv='refresh' content='" + String(webPageRefresh) + "; url=./' />";
   webpage += "<meta name='apple-mobile-web-app-capable' content='yes' />";
   webpage += "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />";
+  webpage += "<link rel='apple-touch-icon' href='https://www.iconfinder.com/data/icons/new-year-s-hand-drawn-basic/64/electronic_clock_1200-512.png' />";
+  webpage += "<link rel='shortcut icon' href='favicon.ico' />";
   webpage += "  <title>LED Matrix Bar - Zalophus's DesignHouse</title>";
   webpage += "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>";
   webpage += "  <style>";
   webpage += "    #jb-container { width: 940px; margin: 0px auto; padding: 10px; border: 1px solid #bcbcbc; }";
   webpage += "    #jb-header { padding: 0px; margin-bottom: 10px; border: 1px solid #bcbcbc; }";
-  webpage += "    #jb-content { width: 580px; padding: 10px; margin-bottom: 10px; float: left; border: 1px solid #bcbcbc; }";
+  webpage += "    #jb-content   { width: 580px; padding: 10px; margin-bottom: 10px; float: left; border: 1px solid #bcbcbc;";
+  webpage += "                    background-image: url(https://www.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_2-512.png);";
+  webpage += "                    background-repeat: no-repeat; background-attachment: fixed; background-size: 100%;";
+  webpage += "                  }";
   webpage += "    #jb-sidebar { width: 310px; padding: 10px; margin-bottom: 10px; float: right; border: 1px solid #bcbcbc; }";
   webpage += "    #jb-footer { clear: both; padding: 10px; border: 1px solid #bcbcbc; }";
   webpage += "    @media screen and (max-width:480px) {";
@@ -99,7 +115,7 @@ void update_webpage() {
   webpage += "<body>";
   webpage += "  <div id='jb-container'>";
   webpage += "    <div id='jb-header'>";
-  webpage += "      <center><a style='TEXT-DECORATION: none' href='./'><h1>LED Matrix Bar<br>Weather Station</h1></a></center>";
+  webpage += "      <center><a style='TEXT-DECORATION: none' href='./'><h1>" + webTitle + "<br>" + webSubTitle + "</h1></a></center>";
   webpage += "    </div>";
   webpage += "    <div id='jb-content'>";
   webpage += "      <table align='center' width='100%'>";
@@ -111,15 +127,22 @@ void update_webpage() {
   webpage += "        </tr>";
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
+  webpage += "          <a href=\"/weatherSCROLL\"\">";
   webpage += "<button type='submit' class='ct-btn white en-01' style='font-size: 14px'>";
+  webpage += String(country) + "<br>";
   webpage += date + "<br>";
-  webpage += "[ " + String(int(h)) + ":" + String(int(m)) + " ]<br>";
-  webpage += "Temp    : " + String(temp,1) + "'C ( " + String(tempMin,1) + "'C -" + String(tempMax,1) + "'C ) <br>";
-  webpage += "Humidity: " + String(humidity) + "%  <br>";
-  webpage += "Pressure: " + String(pressure) + "hPa  <br>";
-  webpage += "Clouds  : " + String(clouds) + "%  <br>";
-  webpage += "Wind    : " + String(windSpeed,1) + "m/s <br>";
-  webpage += "</button><br>";
+  if (am_pm == 12) {
+    webpage += "[ " + String(ampm) + " " + String(int(h)) + ":" + String(int(m)) + " ]<br>";
+  } else {
+    webpage += "[ " + String(int(h)) + ":" + String(int(m)) + " ]<br>";
+  }
+  webpage += "Temp     : " + String(temp,1)      + " 'C ( " + String(tempMin,1) + " 'C - " + String(tempMax,1) + " 'C ) <br>";
+  webpage += "Humidity : " + String(humidity)    + " %  <br>";
+  webpage += "Pressure : " + String(pressure)    + " hPa  <br>";
+  webpage += "Clouds   : " + String(clouds)      + " %  <br>";
+  webpage += "Wind     : " + String(windSpeed,1) + " m/s <br>";
+  webpage += "</button></a><br>";
+  webpage += "<hr>";  // ===========================================================
   webpage += "<a href=\"/repeatprintMsg\"\"><button class='ct-btn white en-01' style='font-size: 12px'>";
   webpage += printMsg;
   webpage += "</button></a>";
@@ -132,109 +155,150 @@ void update_webpage() {
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
-  if(dht12get == 0 || dht22get == 0) {
-    webpage += "    <table align='center' width='100%'>";
-    webpage += "      <tr align='center'>";
-#ifdef USE_DHT22
-    if (indoor == 1) {
-      if(dht22get == 0) {
-        webpage += "    <td>";
-        webpage += " < ";
-        webpage += dht22cTemp;
-        webpage += " 'C >";
-        webpage += "    </td>";
-      }
-    }
-#endif
-#ifdef USE_DHT12
-    if (outdoor == 1) {
-      if(dht12get == 0) {
-        webpage += "    <td>";
-        webpage += " < ";
-        webpage += dht12.readTemperature();
-        webpage += " 'C >";
-        webpage += "    </td>";
-      }
-    }
-#endif
-#ifdef USE_DHT22
-    if (indoor == 1) {
-      webpage += "      <td><b>INDOOR</b>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#ifdef USE_DHT || USE_DHT12
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+#ifdef USE_DHT
+  if (indoor == 1) {
+    if(dht22get == 0) {
+      webpage += "      <td>";
+      webpage += " < ";
+      webpage += dht22cTemp;
+      webpage += " 'C >";
       webpage += "      </td>";
     }
-#endif
-#ifdef USE_DHT12
-    if (outdoor == 1) {
-      webpage += "      <td><b>OUTDOOR</b>";
-      webpage += "      </td>";
-    }
-#endif
-#ifdef USE_DHT22
-    if (indoor == 1) {
-      if(dht22get == 0) {
-        webpage += "    <td>";
-        webpage += " < ";
-        webpage += dht22Humidity;
-        webpage += " % >";
-        webpage += "    </td>";
-      }
-    }
-#endif
-#ifdef USE_DHT12
-    if (outdoor == 1) {
-      if(dht12get == 0) {
-        webpage += "    <td>";
-        webpage += " < ";
-        webpage += dht12.readHumidity();
-        webpage += " % >";
-        webpage += "    </td>";
-      }
-    }
-#endif
-    webpage += "      </tr>";
-    webpage += "    </table>";
-    webpage += "    <table align='center' width='100%'>";
-    webpage += "      <tr align='center'>";
-    webpage += "        <td>";
-    webpage += "          <table align='center' width='100%'>";
-    webpage += "            <tr align='center'>";
-#ifdef USE_DHT22
-    if (indoor == 1) {
-      webpage += "              <td>";
-      if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
-        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
-      } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
-        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
-      } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
-        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
-      } else {
-        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
-      }
-      webpage += "              </td>";
-    }
-#endif
-#ifdef USE_DHT12
-    if (outdoor == 1) {
-      webpage += "              <td>";
-      if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
-        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
-      } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
-        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
-      } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
-        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
-      } else {
-        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
-      }
-      webpage += "              </td>";
-    }
-#endif
-    webpage += "            </tr>";
-    webpage += "          </table>";
-    webpage += "        </td>";
-    webpage += "      </tr>";
-    webpage += "    </table>";
-  } else if(dht12get == 1 && dht22get == 1) {
   }
+#endif
+#ifdef USE_DHT12
+  if (outdoor == 1) {
+    if(dht12get == 0) {
+      webpage += "      <td>";
+      webpage += " < ";
+      webpage += dht12.readTemperature();
+      webpage += " 'C >";
+      webpage += "      </td>";
+    }
+  }
+#endif
+#ifdef USE_DHT
+  if (indoor == 1) {
+    webpage += "        <td><b>INDOOR</b>";
+    webpage += "        </td>";
+  }
+#endif
+#ifdef USE_DHT12
+  if (outdoor == 1) {
+    webpage += "        <td><b>OUTDOOR</b>";
+    webpage += "        </td>";
+  }
+#endif
+#ifdef USE_DHT
+  if (indoor == 1) {
+    if(dht22get == 0) {
+      webpage += "      <td>";
+      webpage += " < ";
+      webpage += dht22Humidity;
+      webpage += " % >";
+      webpage += "      </td>";
+    }
+  }
+#endif
+#ifdef USE_DHT12
+  if (outdoor == 1) {
+    if(dht12get == 0) {
+      webpage += "      <td>";
+      webpage += " < ";
+      webpage += dht12.readHumidity();
+      webpage += " % >";
+      webpage += "      </td>";
+    }
+  }
+#endif
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "            <table align='center' width='100%'>";
+  webpage += "              <tr align='center'>";
+#ifdef USE_DHT
+  if (indoor == 1) {
+#ifndef USE_DHT12
+    webpage += "              <td>";
+    if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
+      webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+    } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
+      webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+    } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
+      webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+    } else {
+      webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+    }
+    webpage += "              </td>";
+#else
+    webpage += "              <td>";
+    if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
+      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
+    } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
+      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
+    } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
+      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
+    } else {
+      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
+    }
+    webpage += "              </td>";
+#endif
+  }
+#endif
+#ifdef USE_DHT12
+  if (outdoor == 1) {
+#ifndef USE_DHT
+    webpage += "              <td>";
+    if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
+      webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+    } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
+      webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+    } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
+      webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+    } else {
+      webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+    }
+    webpage += "              </td>";
+#else
+    webpage += "              <td>";
+    if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
+      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
+    } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
+      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
+    } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
+      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
+    } else {
+      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
+    }
+    webpage += "              </td>";
+#endif
+  }
+#endif
+  webpage += "              </tr>";
+  webpage += "            </table>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
@@ -256,10 +320,10 @@ void update_webpage() {
   }
   webpage += "          </td>";
   webpage += "          <td>";
-  if (gClock == 0) {
-    webpage += "<a href=\"/gClockOn\"\"><button class='ct-btn red en-01' style='font-size: 12px'>----------<br>gClock<br>On<br>----------</button></a>";
+  if (Clock == 0) {
+    webpage += "<a href=\"/ClockOn\"\"><button class='ct-btn red en-01' style='font-size: 12px'>----------<br>Clock<br>On<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/gClockOff\"\"><button class='ct-btn green en-01' style='font-size: 12px'>----------<br>gClock<br>Off<br>----------</button></a>";
+    webpage += "<a href=\"/ClockOff\"\"><button class='ct-btn green en-01' style='font-size: 12px'>----------<br>Clock<br>Off<br>----------</button></a>";
   }
   webpage += "          </td>";
   webpage += "          <td>";
@@ -270,27 +334,40 @@ void update_webpage() {
   }
   webpage += "          </td>";
   webpage += "        </tr>";
-  if(dht12get == 0 || dht22get == 0) {
-    webpage += "      <tr align='center'>";
-    webpage += "        <td>";
-    if (indoorScroll == 0) {
-      webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
-    } else {
-      webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>Off<br>----------</button></a>";
-    }
-    webpage += "        </td>";
-    webpage += "        <td>";
-    webpage += "        </td>";
-    webpage += "        <td>";
-    if (outdoorScroll == 0) {
-      webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
-    } else {
-      webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>Off<br>----------</button></a>";
-    }
-    webpage += "        </td>";
-    webpage += "      </tr>";
-  } else if(dht12get == 1 && dht22get == 1) {
+  webpage += "      </table>";
+#ifdef USE_DHT || USE_DHT12
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+#ifdef USE_DHT
+  webpage += "          <td>";
+  if (indoorScroll == 0) {
+    webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>Off<br>----------</button></a>";
   }
+  webpage += "          </td>";
+#endif
+#ifdef USE_DHT12
+  webpage += "          <td>";
+  if (outdoorScroll == 0) {
+    webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>Off<br>----------</button></a>";
+  }
+  webpage += "          </td>";
+#endif
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+/*
+  webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
   webpage += "          <td><a href=\"/button00\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>I<br>love<br>you<br>----------</button></a></td>";
   webpage += "          <td><a href=\"/button01\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Don't<br>get<br>upset<br>----------</button></a></td>";
@@ -301,48 +378,121 @@ void update_webpage() {
   webpage += "          <td><a href=\"/button04\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>You will<br>never know<br>until you try<br>----------</button></a></td>";
   webpage += "          <td><a href=\"/button05\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Pain past<br>is<br>pleasure<br>----------</button></a></td>";
   webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+ */
+  webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
-  if (digitalRead(16)) { 
-    webpage += "<a href=\"/light16off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Red<br>Off<br>----------</button></a>";
+  if (digitalRead(RED_PIN)) { 
+    webpage += "<a href=\"/alarm16off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Alarm<br>Off<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/light16on\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>----------<br>Red<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/alarm16on\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>----------<br>Alarm<br>On<br>----------</button></a>";
   };
   webpage += "          </td>";
   webpage += "          <td>";
-  if (digitalRead(0)) { 
-    webpage += "<a href=\"/light00off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Green<br>Off<br>----------</button></a>";
+  if (digitalRead(GREEN_PIN)) { 
+    webpage += "<a href=\"/lamp00off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Lamp<br>Off<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/light00on\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>----------<br>Green<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/lamp00on\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>----------<br>Lamp<br>On<br>----------</button></a>";
   }
   webpage += "          </td>";
   webpage += "          <td>";
-  if (digitalRead(12)) { 
-    webpage += "<a href=\"/light12off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Blue<br>Off<br>----------</button></a>";
+  if (digitalRead(BLUE_PIN)) { 
+    webpage += "<a href=\"/scroll12off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scroll<br>Off<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/light12on\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Blue<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/scroll12on\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scroll<br>On<br>----------</button></a>";
   };
   webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "    Alarm Setting<br>";
+  webpage += "            <form action='alarmTime'>";
+  if (am_pm == 12) {
+    webpage += "          <label for='ampm'>Choose a AM/PM:</label><br>";
+    webpage += "          <select id='ampm' name='ampm'>";
+    if (alarm_ampm_select == "AM") {
+      webpage += "          <option value='AM' selected='selected'>AM</option>";
+    } else {
+      webpage += "          <option value='AM'>AM</option>";
+    }
+    if (alarm_ampm_select == "PM") {
+      webpage += "          <option value='PM' selected='selected'>PM</option>";  
+    } else {
+      webpage += "          <option value='PM'>PM</option>";  
+    }
+    webpage += "          </select>";
+    webpage += "          <input type='number' min='01' max='12' name='alarm_h_time' value='";
+    webpage += String(alarm_h_set);
+    webpage += "' size=10% autofocus>:";
+  } else {
+    webpage += "          <input type='number' min='00' max='23' name='alarm_h_time' value='";
+    webpage += String(alarm_h_set);
+    webpage += "' size=10% autofocus>:";
+  }
+  webpage += "            <input type='number' min='00' max='59' name='alarm_m_time' value='";
+  webpage += String(alarm_m_set);
+  webpage += "' size=10% autofocus> ";
+  webpage += "            <input class='ct-btn blue en-01' style='font-size: 12px' type='submit' value='Submit'>";
+  webpage += "            </form>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td><a href=\"/ampmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>AM-PM On/Off</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/onTimeALARM\"\"><button class='ct-btn green en-01' style='font-size: 14px'>On-time Alarm</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/alarmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Alarm</button></a></td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td><a href=\"/updateDATA\"\"><button class='ct-btn green en-01' style='font-size: 14px'>Update Data</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/ESPrestart\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Restart</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/resetAP\"\"><button class='ct-btn red en-01' style='font-size: 14px'>Reset AP</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "    </div>";
   webpage += "    <div id='jb-sidebar'>";
   webpage += "      <table>";
-  webpage += "        <tr><td><H3>Hello, you successfully connected to LED Matrix Bar!</H3></td></tr>";
+  webpage += "        <tr><td><H3>Hello, you successfully connected to " + webTitle + "!</H3></td></tr>";
   webpage += "        <tr>";
   webpage += "          <td>";
+  webpage += "Project: ";
+  webpage += projectName;
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "Version: ";
+  webpage += projectVersion;
+  webpage += "          <br>";
   webpage += "IP address: ";
   webpage += ipStr;
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
+  webpage += "          <br>";
   webpage += "MAC address: ";
   webpage += MAC_char;
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
+  webpage += "          <br>";
   webpage += "mDNS: <br>";
   webpage += "<a href='http://";
   webpage += APname;
@@ -351,14 +501,11 @@ void update_webpage() {
   webpage += APname;
   webpage += ".local/";
   webpage += "</a>";
-  webpage += "          </td>";
-  webpage += "        </tr>";
+  webpage += "          <br>";
+  webpage += "<hr>";  //==================================
 #ifdef USE_DS18B20
-  webpage += "        <tr>";
-  webpage += "          <td>";
   webpage += "[ DS18B20 ] - INSIDE<br>";
   if (ds18b20get == 0) {
-  webpage += "  -------------------- Celsius ( Fahrenheit )<br>";
   webpage += "    - ";
   webpage += "Temperature: ";
   webpage += sensors.getTempCByIndex(0);
@@ -366,17 +513,14 @@ void update_webpage() {
   webpage += sensors.getTempFByIndex(0);
   webpage += " 'F )<br>";
   } else if (ds18b20get == 1){
-  webpage += "    - <font color='red'>Sensor error or disconnected</font>";
+  webpage += "    - <font color='red'>Sensor error or disconnected</font><br>";
   }
-  webpage += "          </td>";
-  webpage += "        </tr>";
 #endif
-#ifdef USE_DHT22
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  webpage += "[ DHT22 ] - INDOOR<br>";
-  if(dht22get == 0) {
-  webpage += "  -------------------- Celsius ( Fahrenheit )<br>";
+#ifdef USE_DHT
+  webpage += "[ DHT";
+  webpage += DHTTYPE;
+  webpage += " ] - INDOOR<br>";
+  if (dht22get == 0) {
   webpage += "    - ";
   webpage += "Temperature: ";
   webpage += dht22cTemp;
@@ -388,17 +532,12 @@ void update_webpage() {
   webpage += dht22Humidity;
   webpage += " %<br>";
   } else {
-  webpage += "    - <font color='red'>Sensor error or disconnected</font>";
+  webpage += "    - <font color='red'>Sensor error or disconnected</font><br>";
   }
-  webpage += "          </td>";
-  webpage += "        </tr>";
 #endif
 #ifdef USE_DHT12
-  webpage += "        <tr>";
-  webpage += "          <td>";
   webpage += "[ DHT12 ] - OUTDOOR<br>";
-  if(dht12get == 0) {
-  webpage += "  -------------------- Celsius ( Fahrenheit )<br>";
+  if (dht12get == 0) {
   webpage += "    - ";
   webpage += "Temperature: ";
   webpage += dht12.readTemperature();
@@ -410,38 +549,24 @@ void update_webpage() {
   webpage += dht12.readHumidity();
   webpage += " %<br>";
   } else {
-  webpage += "    - <font color='red'>Sensor error or disconnected</font>";
+  webpage += "    - <font color='red'>Sensor error or disconnected</font><br>";
   }
-  webpage += "          </td>";
-  webpage += "        </tr>";
 #endif
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  // Battery Monitor: ADC0(Analog Input)
-  int   iA00 = A0;
+  int   iA00 = A0;  // Battery Monitor: ADC0(Analog Input)
   float voltage;
   voltage = analogRead(iA00) / 92.25;  // 11.1V(92.25), 9V(113.77), 7.2V(142.22), 5V(204.8), 3.3V(310.3)
-  webpage += "  --------------------<br>";
-  webpage += "Voltage: ";
+  webpage += "[ Power ]<br>";
+  webpage += "- Voltage: ";
   webpage += voltage;
-  webpage += " Volt (External)";
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  // Internal Voltage Monitor: A0(Analog Input)
-  float bat_level_int = readvdd33() /1000.0;
-  webpage += "Voltage: ";
+  webpage += " Volt (External)<br>";
+  float bat_level_int = readvdd33() / 1000.0;  // Internal Voltage Monitor: A0(Analog Input)
+  webpage += "- Voltage: ";
   webpage += bat_level_int;
-  webpage += " Volt (Internal)";
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  webpage += "  ----------------------------------------<br>";
-  webpage += "LED Matrix Status<br>";
-  webpage += "    - gClock: ";
-  if (gClock == 1) {
+  webpage += " Volt (Internal)<br>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "[ LED Matrix Status ]<br>";
+  webpage += "    - Clock: ";
+  if (Clock == 1) {
     webpage += "On<br>";
   } else {
     webpage += "Off<br>";
@@ -470,37 +595,59 @@ void update_webpage() {
   } else {
     webpage += "Off<br>";
   }
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center'>";
-  webpage += "        <tr align='center'>";
-  webpage += "          <td>";
-  if (OTAmode == 0) {
-    webpage += "[- Over-The-Air Updates mode Off -]";
+  webpage += "<hr width='70%'>";  // ===========================================================
+  webpage += "    - Number of MAX7219's: ";
+  webpage += NUM_MAX;
+  webpage += "<br>";
+  webpage += "    - Initial LED Matrix intensity(1-15): ";
+  webpage += SET_INTENSITY;
+  webpage += "<br>";
+  webpage += "    - Weather scroll interval: ";
+  int weatherScrollInterval = WEATHER_SCROLL_INTERVAL / 1000;
+  webpage += weatherScrollInterval;
+  webpage += " sec<br>";
+  webpage += "    - String shift delay time: ";
+  int stringShiftDelayTime = STRING_SHIFT_DELAY;
+  webpage += stringShiftDelayTime;
+  webpage += " msec<br>";
+  webpage += "    - Update time interval: ";
+  int updateTimeCount = UPDATE_TIME_COUNT * 0.75;
+  webpage += updateTimeCount;
+  webpage += " minute<br>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "[ Clock ]<br>";
+  webpage += "    - Coordinated Universal Time(UTC): ";
+  webpage += utcOffset;
+  webpage += "<br>";
+  webpage += "    - AM-PM Mode: ";
+  if (am_pm == 12) {
+  webpage += "On, 12-hour clock<br>";
   } else {
-    webpage += "[<b>- Over-The-Air Updates mode On -</b>]";
+  webpage += "Off, 24-hour clock<br>";
   }
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center'>";
-  webpage += "        <tr align='center'>";
-  webpage += "          <td>";
-  if (OTAmode == 0) {
-    webpage += "<a href=\"/OTAmodeOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>OTA mode</button></a>";
+  webpage += "    - Alarm Setting Status: ";
+  if (alarm_state == 1) {
+  webpage += "On<br>";
   } else {
-    webpage += "<a href=\"/OTAmodeOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>OTA mode</button></a>";
+  webpage += "Off<br>";
   }
+  webpage += "    - Alarm Time: ";
+  if (onTimeAlarm == 1) {
+    webpage += "On-Time";
+  } else {
+    if (am_pm == 12) {
+      webpage += String(alarm_ampm_select) + " " + String(alarm_h_set) + ":" + String(alarm_m_set);
+    } else {
+      webpage += String(alarm_h_set) + ":" + String(alarm_m_set);
+    }
+  }
+  webpage += "<br>";
   webpage += "          </td>";
-  webpage += "          <td>";
-  webpage += "          </td>";
-  webpage += "          <td><a href=\"/resetAP\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>Reset AP</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "    </div>";
   webpage += "    <div id='jb-footer'>";
-  webpage += "      <a style='TEXT-DECORATION: none' href='http://zalophus.tistory.com/' target='_blank'>Copyright &copy; 2012 Zalophus's DesignHouse All rights reserved.</a>";
+  webpage += "      <a style='TEXT-DECORATION: none' href='https://zalophus.tistory.com/' target='_blank'>Copyright &copy; 2012 Zalophus's DesignHouse All rights reserved.</a>";
   webpage += "    </div>";
   webpage += "  </div>";
   webpage += "</body>";
@@ -512,76 +659,100 @@ void home_page() {
   server.send(200, "text/html", webpage); 
 } 
 
-void gclockWeatherScrollOn() {
-  gclockWeatherScroll = 1;
-  printStringWithShift("                ", 35);
-  printStringWithShift("   Google Clock On", 35);
-  home_page();
-  delay(waitScroll);
-}
-void gclockWeatherScrollOff() {
-  gclockWeatherScroll = 0;
-  printStringWithShift("                ", 35);
-  printStringWithShift("   Google Clock Off", 35);
+void weatherSCROLL() {
+  LEDMatrix_Date_action();
+  LEDMatrix_Weather_action();
   home_page();
   delay(waitScroll);
 }
 
-void gClock_On() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("gClock On", 35);
-  gClock = 1;
+void Clock_On() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Clock On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  Clock = 1;
   home_page();
   delay(waitScroll);
 }
-void gClock_Off() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("gClock Off", 35);
-  gClock = 0;
+void Clock_Off() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Clock Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  Clock = 0;
   home_page();
   delay(waitScroll);
 }
 void showAnimClock_On() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Show Animation Clock On", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Show Animation Clock On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   showAnimClockSW = 1;
   home_page();
   delay(waitScroll);
 }
 void showAnimClock_Off() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Show Simple Clock On", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Show Simple Clock On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   showAnimClockSW = 0;
   home_page();
   delay(waitScroll);
 }
 
 void dateScroll_On() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Date Scroll On", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Date Scroll On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   dateScroll = 1;
   home_page();
   delay(waitScroll);
 }
 void dateScroll_Off() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Date Scroll Off", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Date Scroll Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   dateScroll = 0;
   home_page();
   delay(waitScroll);
 }
 
 void weatherScroll_On() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Weather Scroll On", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Weather Scroll On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   weatherScroll = 1;
   home_page();
   delay(waitScroll);
 }
 void weatherScroll_Off() {
-  printStringWithShift("                ", 35);
-  printStringWithShift("Weather Scroll Off", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Weather Scroll Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   weatherScroll = 0;
+  home_page();
+  delay(waitScroll);
+}
+
+void updateDATA() {
+  printStringWithShift("   Getting data", 15);
+  ntpTime();
+  getWeatherData();
+  delay(waitScroll);
+  LEDMatrix_Clock_action();
+  home_page();
+  delay(waitScroll);
+}
+
+void ESPrestart() {
+  ESP.restart();
   home_page();
   delay(waitScroll);
 }
@@ -592,16 +763,20 @@ void resetAP() {
 }
 
 void OTAmodeOn() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("OTA mode On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   OTAmode = 1;
-  printStringWithShift("                ", 35);
-  printStringWithShift("OTA mode On", 35);
   home_page();
   delay(waitScroll);
 }
 void OTAmodeOff() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("OTA mode Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   OTAmode = 0;
-  printStringWithShift("                ", 35);
-  printStringWithShift("OTA mode Off", 35);
   home_page();
   delay(waitScroll);
 }
@@ -632,160 +807,279 @@ void handle_msg() {
   decodedMsg.replace("%3E", ">");
   decodedMsg.replace("%3F", "?");
   decodedMsg.replace("%40", "@");
-  printStringWithShift("                ", 35);
-  printStringWithShift(decodedMsg.c_str(), 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift(decodedMsg.c_str(), stringShiftDelay);
   printMsg = decodedMsg;
   home_page();
   delay(waitScroll);
 }
 
 void repeatprintMsg() {
-  printStringWithShift("                ", 35);
-  printStringWithShift(printMsg.c_str(), 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift(printMsg.c_str(), stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
 void inDoor() {
-  indoor  = 1;
-  outdoor = 0;
+#ifdef USE_DHT
   char dht22cTemp[10]    = "";
   char dht22Humidity[10] = "";
   dtostrf(dht.readTemperature(), 3, 1, dht22cTemp);
   dtostrf(dht.readHumidity(), 3, 1, dht22Humidity);
   if(dht22get == 0) {
-    printStringWithShift("                ", 35);
-    printStringWithShift("INDOOR", 35);
-    printStringWithShift("   ", 35);
-    printStringWithShift("Temp: ", 35);
-    printStringWithShift(dht22cTemp, 35);
-    printStringWithShift(deg.c_str(), 35);
-    printStringWithShift("C", 35);
-    printStringWithShift("   ", 35);
-    printStringWithShift("Humidity: ", 35);
-    printStringWithShift(dht22Humidity, 35);
-    printStringWithShift("%", 35);
+    printStringWithShift("                ", stringShiftDelay);
+    printStringWithShift("INDOOR", stringShiftDelay);
+    printStringWithShift("   ", stringShiftDelay);
+    printStringWithShift("Temp: ", stringShiftDelay);
+    printStringWithShift(dht22cTemp, stringShiftDelay);
+    printStringWithShift(deg.c_str(), stringShiftDelay);
+    printStringWithShift("C", stringShiftDelay);
+    printStringWithShift("   ", stringShiftDelay);
+    printStringWithShift("Humidity: ", stringShiftDelay);
+    printStringWithShift(dht22Humidity, stringShiftDelay);
+    printStringWithShift("%", stringShiftDelay);
+    printStringWithShift("                ", stringShiftDelay);
   }
+#endif
+  indoor  = 1;
+  outdoor = 0;
   home_page();
   delay(waitScroll);
 }
 
 void outDoor() {
-  indoor  = 0;
-  outdoor = 1;
+#ifdef USE_DHT12
   char dht12cTemp[10]    = "";
   char dht12Humidity[10] = "";
   dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
   dtostrf(dht12.readHumidity(), 3, 1, dht12Humidity);
   if(dht12get == 0) {
-    printStringWithShift("                ", 35);
-    printStringWithShift("OUTDOOR", 35);
-    printStringWithShift("   ", 35);
-    printStringWithShift("Temp: ", 35);
-    printStringWithShift(dht12cTemp, 35);
-    printStringWithShift(deg.c_str(), 35);
-    printStringWithShift("C", 35);
-    printStringWithShift("   ", 35);
-    printStringWithShift("Humidity: ", 35);
-    printStringWithShift(dht12Humidity, 35);
-    printStringWithShift("%", 35);
+    printStringWithShift("                ", stringShiftDelay);
+    printStringWithShift("OUTDOOR", stringShiftDelay);
+    printStringWithShift("   ", stringShiftDelay);
+    printStringWithShift("Temp: ", stringShiftDelay);
+    printStringWithShift(dht12cTemp, stringShiftDelay);
+    printStringWithShift(deg.c_str(), stringShiftDelay);
+    printStringWithShift("C", stringShiftDelay);
+    printStringWithShift("   ", stringShiftDelay);
+    printStringWithShift("Humidity: ", stringShiftDelay);
+    printStringWithShift(dht12Humidity, stringShiftDelay);
+    printStringWithShift("%", stringShiftDelay);
+    printStringWithShift("                ", stringShiftDelay);
   }
+#endif
+  indoor  = 0;
+  outdoor = 1;
   home_page();
   delay(waitScroll);
 }
 
 void inDoorScrollOn() {
-  indoorScroll  = 1;
-  if(dht22get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("INDOOR Scroll On", 35);
+#ifdef USE_DHT
+  if (dht22get == 0) {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("INDOOR Scroll On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   }
+  indoorScroll  = 1;
   home_page();
   delay(waitScroll);
+#endif
 }
 void inDoorScrollOff() {
-  indoorScroll  = 0;
-  if(dht22get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("INDOOR Scroll Off", 35);
+#ifdef USE_DHT
+  if (dht22get == 0) {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("INDOOR Scroll Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   }
+  indoorScroll  = 0;
   home_page();
   delay(waitScroll);
+#endif
 }
 
 void outDoorScrollOn() {
-  outdoorScroll = 1;
-  if(dht12get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("OUTDOOR Scroll On", 35);
+#ifdef USE_DHT12
+  if (dht12get == 0) {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("OUTDOOR Scroll On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   }
+  outdoorScroll = 1;
   home_page();
   delay(waitScroll);
+#endif
 }
 void outDoorScrollOff() {
-  outdoorScroll = 0;
-  if(dht12get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("OUTDOOR Scroll Off", 35);
+#ifdef USE_DHT12
+  if (dht12get == 0) {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("OUTDOOR Scroll Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   }
+  outdoorScroll = 0;
+  home_page();
+  delay(waitScroll);
+#endif
+}
+
+void alarm16on() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Alarm Turn On", stringShiftDelay);
+  digitalWrite(RED_PIN, HIGH);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  home_page();
+  delay(waitScroll);
+}
+void alarm16off() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Alarm Turn Off", stringShiftDelay);
+  digitalWrite(RED_PIN,  LOW);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
-void light16on() {
-  digitalWrite(16, HIGH);
-  printStringWithShift("                ", 35);
-  printStringWithShift("16 Turn On", 35);
+void lamp00on() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Lamp Turn On", stringShiftDelay);
+  digitalWrite(GREEN_PIN, HIGH);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
-void light16off() {
-  digitalWrite(16,  LOW);
-  printStringWithShift("                ", 35);
-  printStringWithShift("16 Turn Off", 35);
-  home_page();
+void lamp00off() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Lamp Turn Off", stringShiftDelay);
+  digitalWrite(GREEN_PIN,  LOW);  
   delay(waitScroll);
-}
-
-void light00on() {
-  digitalWrite( 0, HIGH);
-  printStringWithShift("                ", 35);
-  printStringWithShift("00 Turn On", 35);
-  home_page();
-  delay(waitScroll);
-}
-void light00off() {
-  digitalWrite( 0,  LOW);  
-  printStringWithShift("                ", 35);
-  printStringWithShift("00 Turn Off", 35);
+  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
-void light12on() {
-  digitalWrite(12, HIGH);
-  printStringWithShift("                ", 35);
-  printStringWithShift("12 Turn On", 35);
+void scroll12on() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Scroll Turn On", stringShiftDelay);
+  digitalWrite(BLUE_PIN, HIGH);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
-void light12off() {
-  digitalWrite(12,  LOW);
-  printStringWithShift("                ", 35);
-  printStringWithShift("12 Turn Off", 35);
+void scroll12off() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Scroll Turn Off", stringShiftDelay);
+  digitalWrite(BLUE_PIN,  LOW);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
-void button00() { printStringWithShift("                ", 35); printStringWithShift("I love you", 35); home_page(); delay(waitScroll); }
-void button01() { printStringWithShift("                ", 35); printStringWithShift("Don't get upset", 35); home_page(); delay(waitScroll); }
-void button02() { printStringWithShift("                ", 35); printStringWithShift("I'm upset", 35); home_page(); delay(waitScroll); }
-void button03() { printStringWithShift("                ", 35); printStringWithShift("Catch me if you can", 35); home_page(); delay(waitScroll); }
-void button04() { printStringWithShift("                ", 35); printStringWithShift("You will never know until you try", 35); home_page(); delay(waitScroll); }
-void button05() { printStringWithShift("                ", 35); printStringWithShift("Pain past is pleasure", 35); home_page(); delay(waitScroll); }
+void ampmOnOff() {  // AM-PM Mode, 24: 24-hour clock, 12: 12-hour clock
+  printStringWithShift("                ", stringShiftDelay);
+  if (am_pm == 12) {
+    am_pm = 24;
+    printStringWithShift("AM-PM Mode Off", stringShiftDelay);
+  } else {
+    am_pm = 12;
+    printStringWithShift("AM-PM Mode On", stringShiftDelay);
+  }
+  if (am_pm == 12) {
+    if (alarm_h_set > 12) {
+      alarm_h_set = alarm_h_set - 12;
+      alarm_ampm_select = "PM";
+    } else {
+      alarm_ampm_select = "AM";
+    }
+  } else {
+    if (alarm_ampm_select == "PM") {
+      if (alarm_h_set == 12) {
+        alarm_h_set = alarm_h_set - 12;
+      } else {
+        alarm_h_set = alarm_h_set + 12;
+      }
+    }
+  }
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  ntpTime();
+  home_page();
+  delay(waitScroll);
+}
+
+void alarmTime() {
+  String ampm_select;
+  if (am_pm == 12) {
+    ampm_select  = server.arg("ampm");
+  }
+  String alarm_h_time = server.arg("alarm_h_time");
+  String alarm_m_time = server.arg("alarm_m_time");
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("The alarm is set to ", stringShiftDelay);
+  if (am_pm == 12) {
+    printStringWithShift(ampm_select.c_str(), stringShiftDelay);
+    printStringWithShift(" ", stringShiftDelay);
+  }
+  printStringWithShift(alarm_h_time.c_str(), stringShiftDelay);
+  printStringWithShift(":", stringShiftDelay);
+  printStringWithShift(alarm_m_time.c_str(), stringShiftDelay);
+  if (am_pm == 12) {
+    alarm_ampm_select = ampm_select;
+  }
+  alarm_h_set = alarm_h_time.toInt();
+  alarm_m_set = alarm_m_time.toInt();
+  onTimeAlarm = 0;
+  printStringWithShift("                ", stringShiftDelay);
+  home_page();
+  delay(waitScroll);
+}
+
+void onTimeALARM() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("On-time Alarm Setting", stringShiftDelay);
+  onTimeAlarm = 1;
+  alarm_h_set = 00;
+  alarm_m_set = 00;
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  home_page();
+  delay(waitScroll);
+}
+
+void alarmOnOff() {
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Alarm Setting", stringShiftDelay);
+  if (alarm_state == 0) {
+    alarm_state = 1;
+  } else {
+    alarm_state = 0;
+  }
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+  home_page();
+  delay(waitScroll);
+}
+
+void button00() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("I love you",                        stringShiftDelay); home_page(); delay(waitScroll); }
+void button01() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Don't get upset",                   stringShiftDelay); home_page(); delay(waitScroll); }
+void button02() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("I'm upset",                         stringShiftDelay); home_page(); delay(waitScroll); }
+void button03() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Catch me if you can",               stringShiftDelay); home_page(); delay(waitScroll); }
+void button04() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("You will never know until you try", stringShiftDelay); home_page(); delay(waitScroll); }
+void button05() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Pain past is pleasure",             stringShiftDelay); home_page(); delay(waitScroll); }
 
 // Web Server Start ========================================================
-void webserver_start() {
+void Webserver_setup() {
   server.begin();
 #ifdef USE_UART
   Serial.println("Server started");
@@ -793,20 +1087,29 @@ void webserver_start() {
   delay(10);
 #endif
 
-  server.on("/", home_page);
-  server.on("/gClockOn",                 gClock_On);  // Define what happens when a client requests attention
-  server.on("/gClockOff",               gClock_Off);  // Define what happens when a client requests attention
+  server.on("/",                         home_page);
+
+  server.on("/ClockOn",                   Clock_On);  // Define what happens when a client requests attention
+  server.on("/ClockOff",                 Clock_Off);  // Define what happens when a client requests attention
   server.on("/showAnimClockOn",   showAnimClock_On);  // Define what happens when a client requests attention
   server.on("/showAnimClockOff", showAnimClock_Off);  // Define what happens when a client requests attention
   server.on("/dateScrollOn",         dateScroll_On);  // Define what happens when a client requests attention
   server.on("/dateScrollOff",       dateScroll_Off);  // Define what happens when a client requests attention
   server.on("/weatherScrollOn",   weatherScroll_On);  // Define what happens when a client requests attention
   server.on("/weatherScrollOff", weatherScroll_Off);  // Define what happens when a client requests attention
+  server.on("/weatherSCROLL",        weatherSCROLL);  // Define what happens when a client requests attention
   server.on("/msg",                     handle_msg);  // And as regular external functions:
   server.on("/repeatprintMsg",      repeatprintMsg);  // And as regular external functions:
   server.on("/OTAmodeOn",                OTAmodeOn);  // And as regular external functions:
   server.on("/OTAmodeOff",              OTAmodeOff);  // And as regular external functions:
+  server.on("/updateDATA",              updateDATA);  // And as regular external functions:
+  server.on("/ESPrestart",              ESPrestart);  // And as regular external functions:
   server.on("/resetAP",                    resetAP);  // And as regular external functions:
+
+  server.on("/ampmOnOff",                ampmOnOff);
+  server.on("/alarmTime",                alarmTime);
+  server.on("/onTimeALARM",            onTimeALARM);
+  server.on("/alarmOnOff",              alarmOnOff);
   
   server.on("/inDoor",                      inDoor);
   server.on("/outDoor",                    outDoor);
@@ -815,22 +1118,22 @@ void webserver_start() {
   server.on("/outDoorScrollOn",    outDoorScrollOn);
   server.on("/outDoorScrollOff",  outDoorScrollOff);
 
-  server.on("/light16on",  light16on);
-  server.on("/light16off", light16off);
-  server.on("/light00on",  light00on);
-  server.on("/light00off", light00off);
-  server.on("/light12on",  light12on);
-  server.on("/light12off", light12off);
+  server.on("/alarm16on",                           alarm16on);
+  server.on("/alarm16off",                         alarm16off);
+  server.on("/lamp00on",                             lamp00on);
+  server.on("/lamp00off",                           lamp00off);
+  server.on("/scroll12on",                         scroll12on);
+  server.on("/scroll12off",                       scroll12off);
 
-  server.on("/button00", button00);
-  server.on("/button01", button01);
-  server.on("/button02", button02);
-  server.on("/button03", button03);
-  server.on("/button04", button04);
-  server.on("/button05", button05);
+  server.on("/button00",                  button00);
+  server.on("/button01",                  button01);
+  server.on("/button02",                  button02);
+  server.on("/button03",                  button03);
+  server.on("/button04",                  button04);
+  server.on("/button05",                  button05);
 }
 
-void webserver_action() {
+void Webserver_action() {
   update_webpage();
   server.handleClient();  // Wait for a client to connect and when they do process their requests
 }
