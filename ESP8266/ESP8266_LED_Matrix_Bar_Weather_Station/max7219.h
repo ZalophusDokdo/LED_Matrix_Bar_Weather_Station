@@ -1,9 +1,19 @@
 /* =========================================================================
- *  MAX7219 functions by Pawel A. Hernik
+ *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
+ *  License: GPL v2
+ * =========================================================================
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
+ * =========================================================================
+ *  LED Matrix MAX7219 functions by Pawel A. Hernik
  * =========================================================================
  *  2016.12.10 updated for rotated LED Martices, define ROTATE below (0,90 or 270)
  * =========================================================================
  */ 
+
+#ifndef MAX7219_H
+#define MAX7219_H
+
 // MAX7219 commands:
 #define CMD_NOOP         0
 #define CMD_DIGIT0       1
@@ -20,7 +30,7 @@
 #define CMD_SHUTDOWN    12
 #define CMD_DISPLAYTEST 15
 
-byte scr[NUM_MAX*8 + 8]; // +8 for scrolled char
+byte scr[NUM_MAX*8 + 8];  // +8 for scrolled char
 
 void sendCmd(int addr, byte cmd, byte data)
 {
@@ -51,11 +61,11 @@ void refreshAllRot270() {
   byte mask = 0x01;
   for (int c = 0; c < 8; c++) {
     digitalWrite(CS_PIN, LOW);
-    for(int i = NUM_MAX - 1; i >= 0; i--) {
+    for (int i = NUM_MAX - 1; i >= 0; i--) {
       byte bt = 0;
-      for(int b = 0; b < 8; b++) {
+      for (int b = 0; b < 8; b++) {
         bt <<= 1;
-        if(scr[i * 8 + b] & mask) bt |= 0x01;
+        if (scr[i * 8 + b] & mask) bt |= 0x01;
       }
       shiftOut(DIN_PIN, CLK_PIN, MSBFIRST, CMD_DIGIT0 + c);
       shiftOut(DIN_PIN, CLK_PIN, MSBFIRST, bt);
@@ -128,3 +138,4 @@ void initMAX7219() {
   refreshAll();
 }
 
+#endif
