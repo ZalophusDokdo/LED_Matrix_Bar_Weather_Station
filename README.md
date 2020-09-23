@@ -16,11 +16,35 @@ Features:
 
 * The interface for all the controls is designed as a webapp for internet browser.
 
+Fuctions:
+-
+- mDNS
+- WiFi Manager
+- Web Server (WebUI)
+- LED Matrix Clock
+- Open Weather Map Weather Forecast
+- Indoor and Outdoor temperature and Humidity sensor monitor
+- Scrolling message
+- Scroll Push Switch
+- Lamp Push Switch
+- Alarm time setting (WebUI)
+- Alarm On/Off and Switch
+- Google Assistant: Adafruit IO MQTT + IFTTT
+
 BOM
 -
 - 6 x MAX7219 8 x 8 LED Matrix module
 - 1 x WeMos D1 mini
 - 1 x Interface Shield
+- 1 x DS18B20 temperature sensor (Option)
+- 1 x DHT22 temperature and humidity sensor (Option)
+- 1 x DHT12 temperature and humidity sensor (Option)
+- N x WS2812B RGB LED (Option)
+- 1 x Alarm On/Off button switch
+- 1 x Lamp Push button switch
+- 1 x Scroll Push button switch
+- 1 x Power On/Off switch
+- 1 x Buzzer
 
 Configuring the upload environment
 ==================================
