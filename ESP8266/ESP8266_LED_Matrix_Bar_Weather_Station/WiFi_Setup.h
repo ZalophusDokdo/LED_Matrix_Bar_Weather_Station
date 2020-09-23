@@ -1,13 +1,14 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  WeMos D1 mini WiFi setup
+ *  WiFi setup
  * =========================================================================
  */
+
 #ifndef WIFI_SETUP_H
 #define WIFI_SETUP_H
 
@@ -18,10 +19,10 @@
 
 MDNSResponder mdns;
 
-void wifi_start() {
-  wifimanager_start();
+void WiFi_setup() {
+  WiFiManager_setup();
 
-#ifdef   USE_OTA
+#ifdef USE_OTA
   // Port defaults to 8266
   //ArduinoOTA.setPort(8266);
   // Hostname defaults to esp8266-[ChipID]
@@ -79,7 +80,7 @@ void wifi_start() {
   MDNS.addService("http", "tcp", 80);
 }
 
-void ota_action() {
+void OTA_action() {
   ArduinoOTA.handle();
 }
 
