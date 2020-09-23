@@ -76,6 +76,8 @@ Find and Install
 - WiFiManager by tzapu,tablatronix Version 0.15.0
 - DHT Sensor library by Adafruit Version 1.3.0
 - ArduinoJson by Benoit Blanchon Version 5.11.1
+- Adafruit MQTT Client by Adafruit Version 1.3.0
+- Adafruit_NeoPixel by Adafruit Version 1.1.2
 
 --------------
 After install select ESP9266 board.
