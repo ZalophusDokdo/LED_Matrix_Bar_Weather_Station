@@ -32,8 +32,8 @@
   /************************* Adafruit.io Setup ****************************/
   #define AIO_SERVER  "io.adafruit.com"
   #define AIO_SERVERPORT           1883  // use 1883 for SSL
-  #define AIO_USERNAME              " "  // Replace it with your username
-  #define AIO_KEY                   " "  // Replace with your Project Auth Key
+  #define AIO_USERNAME       "Zalophus"  // Replace it with your username
+  #define AIO_KEY "aio_BxKq919IhP4duJVrp4hqa82S2Ndy"  // Replace with your Project Auth Key
   /************************* Adafruit.io **********************************/
 #endif
 
@@ -42,7 +42,7 @@
   #define USE_DS18B20                    // Use DS18B20 OneWire temperature sensor
 #endif
 #define USE_DHT                          // Use DHT11, DHT22, DHT21 OneWire temperature and humidity sensor (or DHT11)
-//#define USE_DHT12                        // Use DHT12 I2C temperature and humidity sensor
+#define USE_DHT12                        // Use DHT12 I2C temperature and humidity sensor
 
 #define USE_RGB_LED                      // Use RGB LED
 #define USE_RELAY                        // Use RELAY
@@ -75,9 +75,11 @@
   #define USE_RGB_LED_PIN             4  // SDA   (GPIO04) WS2812B RGB LED
 #endif
 #ifdef  USE_DHT12
-  #define USE_RELAY_PIN               3  // RXD   (GPIO03) Relay
-  #define USE_LED_PIN                 3  // RXD   (GPIO03) LED Light
   #define USE_RGB_LED_PIN             3  // RXD   (GPIO03) WS2812B RGB LED
+  #ifndef  USE_RGB_LED_PIN
+    #define USE_RELAY_PIN             3  // RXD   (GPIO03) Relay
+    #define USE_LED_PIN               3  // RXD   (GPIO03) LED Light
+  #endif
 #endif
 #define NUMPIXELS                    64  //1  //16  //64  //256
 
@@ -102,9 +104,9 @@
 // Weather Forcast =========================================================
 // CHANGE YOUR CONFIG HERE: Weather Host http://api.openweathermap.org
 // =========================================================================
-#define WEATHER_KEY                 " "  // API Key
+#define WEATHER_KEY "5dc91881c3a26336a86a52add18ee869"  // API Key
 #define WEATHER_LANG         "&lang=en"  // "&lang=en" English
-#define CITY_ID                     " "  // Gunpo, KR - City ID Number http://openweathermap.org/find
+#define CITY_ID               "1842030"  // Gunpo, KR - City ID Number http://openweathermap.org/find
 // read OpenWeather api description for more info
 
 // Clock ===================================================================
