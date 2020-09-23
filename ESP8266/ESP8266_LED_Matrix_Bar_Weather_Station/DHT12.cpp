@@ -1,9 +1,9 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
  *  DHT12 temperature and humidity sensor
  *  MIT license
