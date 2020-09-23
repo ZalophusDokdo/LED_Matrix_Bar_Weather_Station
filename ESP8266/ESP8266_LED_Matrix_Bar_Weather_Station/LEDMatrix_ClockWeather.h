@@ -1,89 +1,86 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  WeMos D1 mini LED Matrix Bar Interface
- * =========================================================================
- *  GPIO 14 D5 - CLK 
- *  GPIO 13 D7 - DataIn
- *  GPIO 15 D8 - LOAD/CS
+ *  LED Matrix Bar Interface
  * =========================================================================
  */
+
 #ifndef LEDMATRIX_CLOCKWEATHER_H
 #define LEDMATRIX_CLOCKWEATHER_H
 
 #include <ArduinoJson.h>
+#include "NTPClient.h"
 
 WiFiClient client;
 
-String  weatherMain        = "";
-String  weatherDescription = "";
-String  weatherLocation    = "";
-String  country;
-int     humidity;
-int     pressure;
-float   temp;
-float   tempMin, tempMax;
-int     clouds;
-float   windSpeed;
-String  date;
+const char *projectName     = PROJECT_NAME;
+const char *projectVersion  = PROJECT_VERSION;
 
-String  currencyRates;
-String  weatherString;
+int    stringShiftDelay     = STRING_SHIFT_DELAY;
+int    updateTimeCount      = UPDATE_TIME_COUNT;
 
-// for NodeMCU 1.0
-#define DIN_PIN  13
-#define CS_PIN   15
-#define CLK_PIN  14
+String weatherMain          = "";
+String weatherDescription   = "";
+String weatherLocation      = "";
+String country;
+int    humidity;
+int    pressure;
+float  temp;
+float  tempMin, tempMax;
+int    clouds;
+float  windSpeed;
+
+String date;
+String weatherString;
 
 #include "max7219.h"
 #include "fonts.h"
 
 // =======================================================================
-String weatherKey          = WEATHER_KEY;
-String weatherLang         = WEATHER_LANG;
-String cityID              = CITY_ID;      // Warsaw
+String weatherKey           = WEATHER_KEY;
+String weatherLang          = WEATHER_LANG;
+String cityID               = CITY_ID;
 // read OpenWeather api description for more info
 // =======================================================================
 
 // =======================================================================
-int   setIntensity         =   SET_INTENSITY;
-byte  dig[MAX_DIGITS]      =  {0};
-byte  digold[MAX_DIGITS]   =  {0};
-byte  digtrans[MAX_DIGITS] =  {0};
-int   updCnt               =   0;
-int   dots                 =   0;
-long  dotTime              =   0;
-long  clkTime              =   0;
-int   dx                   =   0;
-int   dy                   =   0;
-byte  del                  =   0;
-int   h,m,s;
+int    setIntensity         =   SET_INTENSITY;
+byte   dig[MAX_DIGITS]      =  {0};
+byte   digold[MAX_DIGITS]   =  {0};
+byte   digtrans[MAX_DIGITS] =  {0};
+int    updCnt               =   0;
+int    dots                 =   0;
+long   dotTime              =   0;
+long   clkTime              =   0;
+int    dx                   =   0;
+int    dy                   =   0;
+byte   del                  =   0;
+int    h,m,s;
 // =======================================================================
-float utcOffset            =   UTC_OFFSET;
-long  localEpoc            =   0;
-long  localMillisAtUpdate  =   0;
+int    am_pm                =   AM_PM;
+float  utcOffset            =   UTC_OFFSET;
+long   localEpoc            =   0;
+long   localMillisAtUpdate  =   0;
 // =======================================================================
-int   showAnimClockSW      =   SHOW_ANIM_CLOCK_SW;
+int    showAnimClockSW      =   SHOW_ANIM_CLOCK_SW;
 // =======================================================================
-int showChar(char ch, const uint8_t *data)
-{
+int showChar(char ch, const uint8_t *data) {
   int len  = pgm_read_byte(data);
   int i, w = pgm_read_byte(data + 1 + ch * len);
   for (i = 0; i < w; i++)
     scr[NUM_MAX*8 + i] = pgm_read_byte(data + 1 + ch * len + 1 + i);
-  scr[NUM_MAX*8 + i] = 0;
+    scr[NUM_MAX*8 + i] = 0;
   return w;
 }
 
 // =======================================================================
 int dualChar = 0;
 
-unsigned char convertPolish(unsigned char _c)
-{
+unsigned char convertPolish(unsigned char _c) {
   unsigned char c = _c;
   if(c == 196 || c == 197 || c == 195) {
     dualChar = c;
@@ -139,8 +136,7 @@ unsigned char convertPolish(unsigned char _c)
 }
 
 // =======================================================================
-void showDigit(char ch, int col, const uint8_t *data)
-{
+void showDigit(char ch, int col, const uint8_t *data) {
   if(dy < -8 | dy > 8) return;
   int len = pgm_read_byte(data);
   int w   = pgm_read_byte(data + 1 + ch * len);
@@ -153,8 +149,7 @@ void showDigit(char ch, int col, const uint8_t *data)
 }
 
 // =======================================================================
-void setCol(int col, byte v)
-{
+void setCol(int col, byte v) {
   if(dy < -8 | dy > 8) return;
   col += dx;
   if(col >= 0 && col < 8 * NUM_MAX)
@@ -162,8 +157,7 @@ void setCol(int col, byte v)
 }
 
 // =======================================================================
-void showSimpleClock()
-{
+void showSimpleClock() {
   dx = dy = 0;
   clr();
   showDigit(h/10,  0, dig6x8);
@@ -178,8 +172,7 @@ void showSimpleClock()
 }
 
 // =======================================================================
-void showAnimClock()
-{
+void showAnimClock() {
   byte digPos[6] = {0,8,17,25,34,42};
   int digHt      = 12;
   int num        =  6; 
@@ -231,7 +224,7 @@ void printCharWithShift(unsigned char c, int shiftDelay) {
 }
 
 // =======================================================================
-void printStringWithShift(const char* s, int shiftDelay){
+void printStringWithShift(const char* s, int shiftDelay) {
   while (*s) {
     printCharWithShift(*s, shiftDelay);
     s++;
@@ -239,24 +232,70 @@ void printStringWithShift(const char* s, int shiftDelay){
 }
 
 // =======================================================================
-const char *weatherHost = "api.openweathermap.org";
+const char *ntpHost = "pool.ntp.org";
+// =======================================================================
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpHost);
+//Week Days
+String weekDays[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+//Month names
+String months[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+String ampm;
 
-void getWeatherData()
-{
+void ntpTime_start() {
+  timeClient.begin();
+  // Set offset time in seconds to adjust for your timezone, for example:
+  // GMT +1 = 3600, GMT +9 = 32400, GMT -1 = -3600, GMT 0 = 0
+  timeClient.setTimeOffset(3600 * utcOffset);  // 
+}
+
+void ntpTime() {
+  timeClient.update();
+
+  int day = timeClient.getDay();
+  String date_time; 
+  date_time = timeClient.getFormattedDate();
+  int index_date = date_time.indexOf("T");
+  date = "     " + date_time.substring(0, index_date) +  " " + weekDays[day] + "     ";
+
+  h = timeClient.getHours();
+  m = timeClient.getMinutes();
+  s = timeClient.getSeconds();
+  if (am_pm == 12) {
+    if (h > 12) {
+      h = h - 12;
+      ampm = "PM";
+    } else {
+      ampm = "AM";
+    }
+  } else {
+    ampm = "";
+  }
+  localMillisAtUpdate = millis();
+  localEpoc = (h * 60 * 60 + m * 60 + s);
+}
+
+// =======================================================================
+const char *weatherHost = "api.openweathermap.org";
+// =======================================================================
+void getWeatherData() {
 #ifdef USE_UART
   Serial.print("connecting to "); Serial.println(weatherHost);
 #endif
   if (client.connect(weatherHost, 80)) {
-    client.println(String("GET /data/2.5/weather?id=") + cityID + "&units=metric&appid=" + weatherKey + weatherLang + "\r\n" +
-                "Host: " + weatherHost + "\r\nUser-Agent: ArduinoWiFi/1.1\r\n" +
-                "Connection: close\r\n\r\n");
+    client.println(String("GET /data/2.5/weather?id=") +
+                   cityID + "&units=metric&appid=" +
+                   weatherKey + weatherLang + "\r\n" +
+                   "Host: " + weatherHost + "\r\n" +
+                   "User-Agent: ArduinoWiFi/1.1\r\n" +
+                   "Connection: close\r\n\r\n");
   } else {
 #ifdef USE_UART
     Serial.println("connection failed");
 #endif
     return;
   }
-  String line;
   int repeatCounter = 0;
   while (!client.available() && repeatCounter < 10) {
     delay(500);
@@ -265,12 +304,12 @@ void getWeatherData()
 #endif
     repeatCounter++;
   }
+  String line;
   while (client.connected() && client.available()) {
     char c = client.read(); 
     if (c == '[' || c == ']') c = ' ';
     line += c;
   }
-
   client.stop();
 
   DynamicJsonBuffer jsonBuf;
@@ -286,7 +325,7 @@ void getWeatherData()
   weatherDescription = root["weather"]["description"].as<String>();
   weatherDescription.toLowerCase();
   //weatherLocation = root["name"].as<String>();
-  //country         = root["sys"]["country"].as<String>();
+  country        = root["sys"]["country"].as<String>();
   temp           = root["main"]["temp"];
   humidity       = root["main"]["humidity"];
   pressure       = root["main"]["pressure"];
@@ -304,121 +343,94 @@ void getWeatherData()
 }
 
 // =======================================================================
-void getTime()
-{
-  WiFiClient client;
-  if (!client.connect("www.google.com", 80)) {
-#ifdef USE_UART
-    Serial.println("connection to google failed");
-#endif
-    return;
-  }
-
-  client.print(String("GET / HTTP/1.1\r\n") +
-               String("Host: www.google.com\r\n") +
-               String("Connection: close\r\n\r\n"));
-  int repeatCounter = 0;
-  while (!client.available() && repeatCounter < 10) {
-    delay(500);
-    //Serial.println(".");
-    repeatCounter++;
-  }
-
-  String line;
-  client.setNoDelay(false);
-  while(client.connected() && client.available()) {
-    line   = client.readStringUntil('\n');
-    line.toUpperCase();
-    if (line.startsWith("DATE: ")) {
-      date = "     "+line.substring(6, 22)+"     ";
-      h    = line.substring(23, 25).toInt();
-      m    = line.substring(26, 28).toInt();
-      s    = line.substring(29, 31).toInt();
-      localMillisAtUpdate = millis();
-      localEpoc = (h * 60 * 60 + m * 60 + s);
-    }
-  }
-  client.stop();
-}
-
-// =======================================================================
 void updateTime()
 {
   long curEpoch = localEpoc + ((millis() - localMillisAtUpdate) / 1000);
-  long epoch    = round(curEpoch + 3600 * utcOffset + 86400L) % 86400L;
-  h             = ((epoch  % 86400L) / 3600) % 24;
+  //long epoch    = round(curEpoch + 3600 * utcOffset + 86400L) % 86400L;  // gClock
+  long epoch    = round(curEpoch + 86400L) % 86400L;  // NTP
+  h             = ((epoch % 86400L) / 3600) % 24;  // 24-hour clock, 12-hour clock
   m             = (epoch % 3600) / 60;
   s             = epoch % 60;
 }
 // =======================================================================
 
-void LEDMatrix_ClockWeather_Start()
-{
+void LEDMatrix_ClockWeather_setup() {
   initMAX7219();
   sendCmdAll(CMD_SHUTDOWN,  1);
   sendCmdAll(CMD_INTENSITY, setIntensity);
 #ifdef USE_UART
   Serial.print("Connecting WiFi ");
 #endif
-  printStringWithShift("Connecting    ", 15);
+  printStringWithShift(projectName, 15);
+  delay(1000);
+  printStringWithShift("        ", 15);
+  printStringWithShift(projectVersion, 15);
+  delay(1000);
+  printStringWithShift("                ", 15);
+  delay(1000);
+  printStringWithShift("Connecting    ", 30);
   char result[16];
   sprintf(result, "%3d.%3d.%1d.%3d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
   printStringWithShift(result, 35);
+  ntpTime_start();
 }
 
-void LEDMatrix_DHT22_Action() {
+void LEDMatrix_DHT22_action() {
+#ifdef USE_DHT
   char dht22cTemp[10]    = "";
   char dht22Humidity[10] = "";
   dtostrf(dht.readTemperature(), 3, 1, dht22cTemp);
   dtostrf(dht.readHumidity(), 3, 1, dht22Humidity);
-  String deg     = String(char('~'+25));
+  String deg = String(char('~'+25));
   if(dht22get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("INDOOR", 35);
-  printStringWithShift("   ", 35);
-  printStringWithShift("Temp: ", 35);
-  printStringWithShift(dht22cTemp, 35);
-  printStringWithShift(deg.c_str(), 35);
-  printStringWithShift("C", 35);
-  printStringWithShift("   ", 35);
-  printStringWithShift("Humidity: ", 35);
-  printStringWithShift(dht22Humidity, 35);
-  printStringWithShift("%   ", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("INDOOR", stringShiftDelay);
+  printStringWithShift("   ", stringShiftDelay);
+  printStringWithShift("Temp: ", stringShiftDelay);
+  printStringWithShift(dht22cTemp, stringShiftDelay);
+  printStringWithShift(deg.c_str(), stringShiftDelay);
+  printStringWithShift("C", stringShiftDelay);
+  printStringWithShift("   ", stringShiftDelay);
+  printStringWithShift("Humidity: ", stringShiftDelay);
+  printStringWithShift(dht22Humidity, stringShiftDelay);
+  printStringWithShift("%   ", stringShiftDelay);
+  printStringWithShift("                ", stringShiftDelay);
   }
+#endif
 }
-void LEDMatrix_DHT12_Action() {
+void LEDMatrix_DHT12_action() {
+#ifdef USE_DHT12
   char dht12cTemp[10]    = "";
   char dht12Humidity[10] = "";
   dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
   dtostrf(dht12.readHumidity(), 3, 1, dht12Humidity);
-  String deg     = String(char('~'+25));
+  String deg = String(char('~'+25));
   if(dht12get == 0) {
-  printStringWithShift("                ", 35);
-  printStringWithShift("OUTDOOR", 35);
-  printStringWithShift("   ", 35);
-  printStringWithShift("Temp: ", 35);
-  printStringWithShift(dht12cTemp, 35);
-  printStringWithShift(deg.c_str(), 35);
-  printStringWithShift("C", 35);
-  printStringWithShift("   ", 35);
-  printStringWithShift("Humidity: ", 35);
-  printStringWithShift(dht12Humidity, 35);
-  printStringWithShift("%   ", 35);
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("OUTDOOR", stringShiftDelay);
+  printStringWithShift("   ", stringShiftDelay);
+  printStringWithShift("Temp: ", stringShiftDelay);
+  printStringWithShift(dht12cTemp, stringShiftDelay);
+  printStringWithShift(deg.c_str(), stringShiftDelay);
+  printStringWithShift("C", stringShiftDelay);
+  printStringWithShift("   ", stringShiftDelay);
+  printStringWithShift("Humidity: ", stringShiftDelay);
+  printStringWithShift(dht12Humidity, stringShiftDelay);
+  printStringWithShift("%   ", stringShiftDelay);
+  printStringWithShift("                ", stringShiftDelay);
   }
+#endif
 }
 
-void LEDMatrix_Date_Action()
-{
-  printStringWithShift(date.c_str(),          40);
+void LEDMatrix_Date_action() {
+  printStringWithShift(date.c_str(),          stringShiftDelay);
 }
 
-void LEDMatrix_Weather_Action()
-{
-  printStringWithShift(weatherString.c_str(), 40);
+void LEDMatrix_Weather_action() {
+  printStringWithShift(weatherString.c_str(), stringShiftDelay);
 }
 
-void LEDMatrix_Clock_Action()
-{
+void LEDMatrix_Clock_action() {
   if(millis() - dotTime > 500) {
     dotTime = millis();
     dots    = !dots;
@@ -431,16 +443,15 @@ void LEDMatrix_Clock_Action()
   }
 }
 
-void LEDMatrix_Action()
-{
-  if(updCnt <= 0) {  // every 10 scrolls, ~450s = 7.5m
-    updCnt = 10;
+void LEDMatrix_action() {
+  if(updCnt <= 0) {
+    updCnt = updateTimeCount;  // default: 10, every 10 scrolls, ~450s = 7.5m // 80 scrolls, ~3600s = 60m
 #ifdef USE_UART
     Serial.println("Getting data ...");
 #endif
     printStringWithShift("   Getting data", 15);
+    ntpTime();
     getWeatherData();
-    getTime();
 #ifdef USE_UART
     Serial.println("Data loaded");
 #endif
