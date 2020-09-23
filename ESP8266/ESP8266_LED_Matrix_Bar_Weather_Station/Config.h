@@ -27,7 +27,7 @@
 
 // Network =================================================================
 #define USE_WEB_SERVER                   // Use Web Server
-#define USE_MQTT                         // Use Adafruit IO MQTT
+//#define USE_MQTT                         // Use Adafruit IO MQTT
 #ifdef USE_MQTT
   /************************* Adafruit.io Setup ****************************/
   #define AIO_SERVER  "io.adafruit.com"
