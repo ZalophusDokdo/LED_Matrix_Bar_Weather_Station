@@ -1,21 +1,20 @@
 /* =========================================================================
  *  Author: Zalophus Dokdo (https://zddh.blogspot.com)
- *  Date: 31/08/2017
+ *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station
+ *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  WeMos D1 mini DS18B20 temperature sensor
+ *  DS18B20 temperature sensor
  * =========================================================================
  */
+
 #ifndef DS18B20_H
 #define DS18B20_H
 
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-// Data wire is plugged into pin 2 on the Arduino
-#define  ONE_WIRE_BUS   2  // D4
 // Setup a oneWire instance to communicate with any OneWire devices 
 OneWire ourWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
@@ -26,8 +25,8 @@ DeviceAddress insideThermometer, outsideThermometer;
 
 int ds18b20get      = 0;
 
-void ds18b20_start() {
-  pinMode( 1,  INPUT);  // TXD
+void DS18B20_setup() {
+  pinMode(ONE_WIRE_BUS,  INPUT);
   sensors.begin();
 
   // search for devices on the bus and assign based on an index.
@@ -47,7 +46,7 @@ void ds18b20_start() {
   }
 }
 
-void ds18b20_action() {
+void DS18B20_action() {
   sensors.requestTemperatures();  // Send the command to get temperatures
   if (ds18b20get == 0) {
 #ifdef USE_UART
