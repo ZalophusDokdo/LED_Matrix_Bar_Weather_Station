@@ -42,7 +42,7 @@
   #define USE_DS18B20                    // Use DS18B20 OneWire temperature sensor
 #endif
 #define USE_DHT                          // Use DHT11, DHT22, DHT21 OneWire temperature and humidity sensor (or DHT11)
-#define USE_DHT12                        // Use DHT12 I2C temperature and humidity sensor
+//#define USE_DHT12                        // Use DHT12 I2C temperature and humidity sensor
 
 #define USE_RGB_LED                      // Use RGB LED
 #define USE_RELAY                        // Use RELAY
