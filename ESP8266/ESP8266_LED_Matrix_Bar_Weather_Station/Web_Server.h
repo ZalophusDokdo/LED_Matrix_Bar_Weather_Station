@@ -55,7 +55,7 @@ void append_webpage_header() {
   webpage += "<meta http-equiv='refresh' content='" + String(webPageRefresh) + "; url=./' />";
   webpage += "<meta name='apple-mobile-web-app-capable' content='yes' />";
   webpage += "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />";
-  webpage += "<link rel='apple-touch-icon' href='https://www.iconfinder.com/data/icons/new-year-s-hand-drawn-basic/64/electronic_clock_1200-512.png' />";
+  webpage += "<link rel='apple-touch-icon' href='https://raw.githubusercontent.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/master/images/electronic_clock_1200_811483_512.png' />";
   webpage += "<link rel='shortcut icon' href='favicon.ico' />";
   webpage += "  <title>LED Matrix Bar - Zalophus's DesignHouse</title>";
   webpage += "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>";
@@ -63,7 +63,7 @@ void append_webpage_header() {
   webpage += "    #jb-container { width: 940px; margin: 0px auto; padding: 10px; border: 1px solid #bcbcbc; }";
   webpage += "    #jb-header { padding: 0px; margin-bottom: 10px; border: 1px solid #bcbcbc; }";
   webpage += "    #jb-content   { width: 580px; padding: 10px; margin-bottom: 10px; float: left; border: 1px solid #bcbcbc;";
-  webpage += "                    background-image: url(https://www.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_2-512.png);";
+  webpage += "                    background-image: url(https://raw.githubusercontent.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/master/images/weather_2_2682849_512.png);";
   webpage += "                    background-repeat: no-repeat; background-attachment: fixed; background-size: 100%;";
   webpage += "                  }";
   webpage += "    #jb-sidebar { width: 310px; padding: 10px; margin-bottom: 10px; float: right; border: 1px solid #bcbcbc; }";
