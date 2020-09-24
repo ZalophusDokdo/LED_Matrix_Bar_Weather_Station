@@ -1,4 +1,4 @@
-# ESP8266 LED Matrix Bar Weather Station
+# ESP8266 LED Matrix Bar Weather Station (Version 1.0.4)
 ESP8266 LED Matrix Bar Weather Station and Clock Massenger
 
 Features:
