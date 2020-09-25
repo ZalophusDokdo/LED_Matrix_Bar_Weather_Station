@@ -91,6 +91,15 @@ After install select ESP9266 board.
 Schematic is available here:
 - Normal: https://easyeda.com/neoseven/led-matrix-bar-weather-station-normal
 - Expansion: https://easyeda.com/neoseven/led-matrix-bar-weather-station (Unfinished - Future plans)
+<p align="center">
+	<a href="https://image.easyeda.com/histories/2f5152c7b3b54089b06c75a85e043b24.png">
+    <img src="https://image.easyeda.com/histories/2f5152c7b3b54089b06c75a85e043b24.png" width="100%">
+  </a>
+  <br>
+  <a href="https://image.easyeda.com/histories/966b60a72ef94350a83fd2987f659129.png">
+    <img src="https://image.easyeda.com/histories/966b60a72ef94350a83fd2987f659129.png" width="100%">
+  </a>
+</p>
 
 ---------------
 3D Parts:
