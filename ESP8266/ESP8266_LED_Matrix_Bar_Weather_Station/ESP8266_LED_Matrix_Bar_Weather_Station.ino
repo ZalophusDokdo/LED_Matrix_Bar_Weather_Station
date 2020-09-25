@@ -325,8 +325,7 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
       digitalWrite(USE_LED_PIN,  LOW);
 #endif
 #ifdef   USE_RGB_LED
-    colorWipe(strip.Color(  0,   0,   0),  0);
-    //strip.show();
+    //colorWipe(strip.Color(  0,   0,   0),  0);
 #endif
   }
   if (digitalRead(BLUE_PIN)) {  // Weather Scroll Push Button Switch
