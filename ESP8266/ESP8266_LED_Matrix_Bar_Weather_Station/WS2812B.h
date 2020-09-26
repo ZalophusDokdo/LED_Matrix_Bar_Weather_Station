@@ -9,8 +9,8 @@
  * =========================================================================
  */
 
-#ifndef WS2812B_h
-#define WS2812B_h
+#ifndef WS2812B_H
+#define WS2812B_H
 
 #include <Adafruit_NeoPixel.h>
 

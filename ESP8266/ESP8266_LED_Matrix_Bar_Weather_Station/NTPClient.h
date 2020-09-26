@@ -9,6 +9,9 @@
  * =========================================================================
  */
 
+#ifndef NTP_H
+#define NTP_H
+
 #pragma once
 
 #include "Arduino.h"
@@ -114,3 +117,5 @@ class NTPClient {
     */
     void setEpochTime(unsigned long secs);
 };
+
+#endif

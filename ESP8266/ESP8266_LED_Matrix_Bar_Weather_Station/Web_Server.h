@@ -957,7 +957,7 @@ void lamp00on() {
   printStringWithShift("Lamp Turn On", stringShiftDelay);
   digitalWrite(GREEN_PIN, HIGH);
 #ifdef   USE_RGB_LED && USE_RGB_LED_PIN
-  button00count = button00count++;
+  button00count++;
   if (button00count == 1) {
     colorWipe(strip.Color(255, 255, 255), 10);     // White
   } else if (button00count == 2) {
@@ -965,7 +965,7 @@ void lamp00on() {
     colorWipe(strip.Color(  0, 255,   0), 50);     // Green
     colorWipe(strip.Color(  0,   0, 255), 50);     // Blue
     colorWipe(strip.Color(255, 255, 255), 50);     // White
-    colorWipe(strip.Color(  0,   0,   0), 50);     // Black
+    //colorWipe(strip.Color(  0,   0,   0), 50);     // Black
   } else if (button00count == 3) {
     theaterChase(strip.Color(127,   0,   0), 20);  // Red
     theaterChase(strip.Color(  0, 127,   0), 20);  // Green
@@ -976,7 +976,7 @@ void lamp00on() {
   } else if (button00count == 5) {
     rainbowCycle(20);
   } else if (button00count == 6) {
-    theaterChaseRainbow(50);
+    theaterChaseRainbow(30);
     button00count == 0;
   }
 #endif
@@ -990,7 +990,7 @@ void lamp00off() {
   printStringWithShift("Lamp Turn Off", stringShiftDelay);
   digitalWrite(GREEN_PIN,  LOW);  
 #ifdef   USE_RGB_LED && USE_RGB_LED_PIN
-    colorWipe(strip.Color(  0,   0,   0),  0);
+    colorWipe(strip.Color(  0,   0,   0),  10);
 #endif
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
