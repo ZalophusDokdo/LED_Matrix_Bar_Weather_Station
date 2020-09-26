@@ -40,11 +40,15 @@ String deg               = String(char('~'+25));
 String webpage           = "";
 String printMsg;
 
-int    onTimeAlarm = 0;
-int    alarm_state = ALARM_STATE;
-int    alarm_h_set = ALARM_H_SET;
-int    alarm_m_set = ALARM_M_SET;
+int    onTimeAlarm       = 0;
+int    alarm_state       = ALARM_STATE;
+int    alarm_h_set       = ALARM_H_SET;
+int    alarm_m_set       = ALARM_M_SET;
 String alarm_ampm_select = "AM";
+
+int    button16count     = 0;
+int    button00count     = 0;
+int    button12count     = 0;
 
 void append_webpage_header() {
   // webpage is a global variable
@@ -452,8 +456,8 @@ void update_webpage() {
   webpage += "          <td><a href=\"/ampmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>AM-PM On/Off</button></a></td>";
   webpage += "          <td></td>";
   webpage += "          <td><a href=\"/onTimeALARM\"\"><button class='ct-btn green en-01' style='font-size: 14px'>On-time Alarm</button></a></td>";
-  webpage += "          <td></td>";
-  webpage += "          <td><a href=\"/alarmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Alarm</button></a></td>";
+//  webpage += "          <td></td>";
+//  webpage += "          <td><a href=\"/alarmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Alarm</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "      <table align='center' width='100%'>";
@@ -952,6 +956,30 @@ void lamp00on() {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn On", stringShiftDelay);
   digitalWrite(GREEN_PIN, HIGH);
+#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
+  button00count = button00count++;
+  if (button00count == 1) {
+    colorWipe(strip.Color(255, 255, 255), 10);     // White
+  } else if (button00count == 2) {
+    colorWipe(strip.Color(255,   0,   0), 50);     // Red
+    colorWipe(strip.Color(  0, 255,   0), 50);     // Green
+    colorWipe(strip.Color(  0,   0, 255), 50);     // Blue
+    colorWipe(strip.Color(255, 255, 255), 50);     // White
+    colorWipe(strip.Color(  0,   0,   0), 50);     // Black
+  } else if (button00count == 3) {
+    theaterChase(strip.Color(127,   0,   0), 20);  // Red
+    theaterChase(strip.Color(  0, 127,   0), 20);  // Green
+    theaterChase(strip.Color(  0,   0, 127), 20);  // Blue
+    theaterChase(strip.Color(127, 127, 127), 20);  // White
+  } else if (button00count == 4) {
+    rainbow(20);
+  } else if (button00count == 5) {
+    rainbowCycle(20);
+  } else if (button00count == 6) {
+    theaterChaseRainbow(50);
+    button00count == 0;
+  }
+#endif
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   home_page();
@@ -961,6 +989,9 @@ void lamp00off() {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn Off", stringShiftDelay);
   digitalWrite(GREEN_PIN,  LOW);  
+#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
+    colorWipe(strip.Color(  0,   0,   0),  0);
+#endif
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   home_page();

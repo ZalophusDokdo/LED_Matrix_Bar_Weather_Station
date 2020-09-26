@@ -92,10 +92,6 @@ String note[] = {"C6", "D6", "E6", "F6", "G6", "A6", "B6", "C7"};
 int    alarm_action          =  1;
 String alarm_message         = "";
 
-int    button16count         =  0;
-int    button00count         =  0;
-int    button12count         =  0;
-
 void setup() {  // #########################################################
   // put your setup code here, to run once:
   Serial.begin(SERIAL_SPEED);
@@ -261,61 +257,6 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
       pinMode(USE_LED_PIN, OUTPUT);
       digitalWrite(USE_LED_PIN,  HIGH);
 #endif
-#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
-      //colorWipe(strip.Color(255,   0,   0), 10);     // Red
-      //colorWipe(strip.Color(  0, 255,   0), 10);     // Green
-      //colorWipe(strip.Color(  0,   0, 255), 10);     // Blue
-      colorWipe(strip.Color(255, 255, 255), 10);     // White
-      //colorWipe(strip.Color(  0,   0,   0), 10);     // Black
-      // Send a theater pixel chase in...
-      //theaterChase(strip.Color(127,   0,   0), 10);  // Red
-      //theaterChase(strip.Color(  0, 127,   0), 10);  // Green
-      //theaterChase(strip.Color(  0,   0, 127), 10);  // Blue
-      //theaterChase(strip.Color(127, 127, 127), 10);  // White
-      //rainbow(10);
-      //rainbowCycle(10);
-      //theaterChaseRainbow(30);
-#endif
-/*
-    button00count = button00count++;
-    if (button00count == 1) {
-#ifdef   USE_RGB_LED
-      //colorWipe(strip.Color(255,   0,   0), 20);     // Red
-      //colorWipe(strip.Color(  0, 255,   0), 20);     // Green
-      //colorWipe(strip.Color(  0,   0, 255), 20);     // Blue
-      colorWipe(strip.Color(255, 255, 255), 10);     // White
-      //colorWipe(strip.Color(  0,   0,   0), 20);     // Black
-      // Send a theater pixel chase in...
-      //theaterChase(strip.Color(127,   0,   0), 20);  // Red
-      //theaterChase(strip.Color(  0, 127,   0), 20);  // Green
-      //theaterChase(strip.Color(  0,   0, 127), 20);  // Blue
-      //theaterChase(strip.Color(127, 127, 127), 20);  // White
-      //rainbow(20);
-      //rainbowCycle(20);
-      //theaterChaseRainbow(50);
-#endif
-    } else if (button00count == 2) {
-#ifdef   USE_RGB_LED
-      theaterChase(strip.Color(127,   0,   0), 20);  // Red
-      theaterChase(strip.Color(  0, 127,   0), 20);  // Green
-      theaterChase(strip.Color(  0,   0, 127), 20);  // Blue
-      theaterChase(strip.Color(127, 127, 127), 20);  // White
-#endif
-    } else if (button00count == 3) {
-#ifdef   USE_RGB_LED
-      rainbow(20);
-#endif
-    } else if (button00count == 4) {
-#ifdef   USE_RGB_LED
-      rainbowCycle(20);
-#endif
-    } else if (button00count == 5) {
-#ifdef   USE_RGB_LED
-      theaterChaseRainbow(50);
-#endif
-      button00count == 0;
-    }
- */
   }
   if (!digitalRead(GREEN_PIN)) {  // Lamp Push Button Switch
 #ifdef   USE_RELAY_PIN
@@ -323,9 +264,6 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
 #endif
 #ifdef   USE_LED_PIN
       digitalWrite(USE_LED_PIN,  LOW);
-#endif
-#ifdef   USE_RGB_LED
-    //colorWipe(strip.Color(  0,   0,   0),  0);
 #endif
   }
   if (digitalRead(BLUE_PIN)) {  // Weather Scroll Push Button Switch
