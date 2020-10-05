@@ -118,8 +118,8 @@ WebApp:
     <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-2020-10-06-02_29_31.png" width="100%">
   </a>
   <br>
-  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-2020-10-06-02_29_31.png">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-2020-10-06-02_29_31.png" width="100%">
+  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-2020-10-06-02_31_46.png">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-2020-10-06-02_31_46.png" width="30%">
   </a>
 </p>
 
