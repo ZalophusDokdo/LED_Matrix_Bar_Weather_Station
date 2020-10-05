@@ -201,7 +201,8 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
       alarm_message = printMsg;      
     }
     if (m == alarm_m_set && alarm_action == 1) {
-      if (onTimeAlarm == 1 && m == alarm_m_set && alarm_action == 1 && alarm_state == 1) {
+      // On-time Alarm
+      if (onTimeAlarm == 1 && m == alarm_m_set && alarm_state == 1) {
         for (int i = 0; i < 8; i++) {
           pinMode(WHITE_PIN, OUTPUT);
           digitalWrite(WHITE_PIN,  HIGH);
@@ -214,7 +215,8 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
         delay(1000);
         printStringWithShift("                ", stringShiftDelay);
         delay(waitScroll);
-      } else if (am_pm == 12 && ampm == alarm_ampm_select && h == alarm_h_set && m == alarm_m_set && alarm_action == 1 && alarm_state == 1) {
+      // 12-hour clock Alarm
+      } else if (am_pm == 12 && ampm == alarm_ampm_select && h == alarm_h_set && m == alarm_m_set && alarm_state == 1) {
         for (int i = 0; i < 8; i++) {
          pinMode(WHITE_PIN, OUTPUT);
           digitalWrite(WHITE_PIN,  HIGH);
@@ -227,7 +229,8 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
         delay(1000);
         printStringWithShift("                ", stringShiftDelay);
         delay(waitScroll);
-      } else if (h == alarm_h_set && m == alarm_m_set && alarm_action == 1 && alarm_state == 1) {
+      // 24-hour clock Alarm
+      } else if (am_pm == 24 && h == alarm_h_set && m == alarm_m_set && alarm_state == 1) {
         for (int i = 0; i < 8; i++) {
           pinMode(WHITE_PIN, OUTPUT);
           digitalWrite(WHITE_PIN,  HIGH);
