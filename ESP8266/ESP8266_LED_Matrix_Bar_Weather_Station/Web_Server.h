@@ -166,65 +166,71 @@ void update_webpage() {
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
-#ifdef USE_DHT || USE_DHT12
+#if defined(USE_DHT) || defined(USE_DHT12)
+  #ifndef USE_DHT
+    outdoor = 1;
+  #endif
+  #ifndef USE_DHT12
+    indoor  = 1;
+  #endif
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
-#ifdef USE_DHT
-  if (indoor == 1) {
-    if(dht22get == 0) {
-      webpage += "      <td>";
-      webpage += " < ";
-      webpage += dht22cTemp;
-      webpage += " 'C >";
+  #ifdef USE_DHT
+    if (indoor == 1) {
+      if(dht22get == 0) {
+        webpage += "    <td>";
+        webpage += " < ";
+        webpage += dht22cTemp;
+        webpage += " 'C >";
+        webpage += "    </td>";
+      }
+    }
+  #endif
+  #ifdef USE_DHT12
+    if (outdoor == 1) {
+      if(dht12get == 0) {
+        webpage += "    <td>";
+        webpage += " < ";
+        webpage += dht12.readTemperature();
+        webpage += " 'C >";
+        webpage += "    </td>";
+      }
+    }
+  #endif
+  #ifdef USE_DHT
+    if (indoor == 1) {
+      webpage += "      <td><b>INDOOR</b>";
       webpage += "      </td>";
     }
-  }
-#endif
-#ifdef USE_DHT12
-  if (outdoor == 1) {
-    if(dht12get == 0) {
-      webpage += "      <td>";
-      webpage += " < ";
-      webpage += dht12.readTemperature();
-      webpage += " 'C >";
+  #endif
+  #ifdef USE_DHT12
+    if (outdoor == 1) {
+      webpage += "      <td><b>OUTDOOR</b>";
       webpage += "      </td>";
     }
-  }
-#endif
-#ifdef USE_DHT
-  if (indoor == 1) {
-    webpage += "        <td><b>INDOOR</b>";
-    webpage += "        </td>";
-  }
-#endif
-#ifdef USE_DHT12
-  if (outdoor == 1) {
-    webpage += "        <td><b>OUTDOOR</b>";
-    webpage += "        </td>";
-  }
-#endif
-#ifdef USE_DHT
-  if (indoor == 1) {
-    if(dht22get == 0) {
-      webpage += "      <td>";
-      webpage += " < ";
-      webpage += dht22Humidity;
-      webpage += " % >";
-      webpage += "      </td>";
+  #endif
+  #ifdef USE_DHT
+    if (indoor == 1) {
+      if(dht22get == 0) {
+        webpage += "    <td>";
+        webpage += " < ";
+        webpage += dht22Humidity;
+        webpage += " % >";
+        webpage += "    </td>";
+      }
     }
-  }
-#endif
-#ifdef USE_DHT12
-  if (outdoor == 1) {
-    if(dht12get == 0) {
-      webpage += "      <td>";
-      webpage += " < ";
-      webpage += dht12.readHumidity();
-      webpage += " % >";
-      webpage += "      </td>";
+  #endif
+  #ifdef USE_DHT12
+    if (outdoor == 1) {
+      if(dht12get == 0) {
+        webpage += "    <td>";
+        webpage += " < ";
+        webpage += dht12.readHumidity();
+        webpage += " % >";
+        webpage += "    </td>";
+      }
     }
-  }
-#endif
+  #endif
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "      <table align='center' width='100%'>";
@@ -232,64 +238,64 @@ void update_webpage() {
   webpage += "          <td>";
   webpage += "            <table align='center' width='100%'>";
   webpage += "              <tr align='center'>";
-#ifdef USE_DHT
-  if (indoor == 1) {
-#ifndef USE_DHT12
-    webpage += "              <td>";
-    if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
-      webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
-    } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
-      webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
-    } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
-      webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
-    } else {
-      webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
-    }
-    webpage += "              </td>";
-#else
-    webpage += "              <td>";
-    if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
-      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
-    } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
-      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
-    } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
-      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
-    } else {
-      webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
-    }
-    webpage += "              </td>";
-#endif
+  #ifdef USE_DHT
+    if (indoor == 1) {
+    #ifndef USE_DHT12
+      webpage += "            <td>";
+      if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
+        webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+      } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
+        webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+      } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
+        webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+      } else {
+        webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+      }
+      webpage += "            </td>";
+    #else
+      webpage += "            <td>";
+      if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
+      } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
+      } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
+      } else {
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
+      }
+      webpage += "            </td>";
+    #endif
   }
-#endif
-#ifdef USE_DHT12
-  if (outdoor == 1) {
-#ifndef USE_DHT
-    webpage += "              <td>";
-    if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
-      webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
-    } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
-      webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
-    } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
-      webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
-    } else {
-      webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+  #endif
+  #ifdef USE_DHT12
+    if (outdoor == 1) {
+    #ifndef USE_DHT
+      webpage += "            <td>";
+      if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
+        webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+      } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
+        webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+      } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
+        webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+      } else {
+        webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+      }
+      webpage += "            </td>";
+    #else
+      webpage += "            <td>";
+      if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
+      } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
+      } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
+      } else {
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
+      }
+        webpage += "            </td>";
+    #endif
     }
-    webpage += "              </td>";
-#else
-    webpage += "              <td>";
-    if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
-      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
-    } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
-      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
-    } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
-      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
-    } else {
-      webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
-    }
-    webpage += "              </td>";
-#endif
-  }
-#endif
+  #endif
   webpage += "              </tr>";
   webpage += "            </table>";
   webpage += "          </td>";
@@ -307,9 +313,9 @@ void update_webpage() {
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
   if (showAnimClockSW == 0) {
-    webpage += "<a href=\"/showAnimClockOn\"\"><button class='ct-btn green en-01' style='font-size: 12px'>- Show Animation Clock -</button></a>";
+    webpage += "<a href=\"/showAnimClockOn\"\"><button class='ct-btn green en-01' style='font-size: 14px'>- Show Animation Clock -</button></a>";
   } else {
-    webpage += "<a href=\"/showAnimClockOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>- Show Simple Clock -</button></a>";
+    webpage += "<a href=\"/showAnimClockOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>- Show Simple Clock -</button></a>";
   }
   webpage += "          </td>";
   webpage += "        </tr>";
@@ -318,45 +324,45 @@ void update_webpage() {
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
   if (dateScroll == 0) {
-    webpage += "<a href=\"/dateScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
+    webpage += "<a href=\"/dateScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/dateScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
+    webpage += "<a href=\"/dateScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
   }
   webpage += "          </td>";
   webpage += "          <td>";
   if (Clock == 0) {
-    webpage += "<a href=\"/ClockOn\"\"><button class='ct-btn red en-01' style='font-size: 12px'>----------<br>Clock<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/ClockOn\"\"><button class='ct-btn red en-01' style='font-size: 14px'>----------<br>Clock<br>On<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/ClockOff\"\"><button class='ct-btn green en-01' style='font-size: 12px'>----------<br>Clock<br>Off<br>----------</button></a>";
+    webpage += "<a href=\"/ClockOff\"\"><button class='ct-btn green en-01' style='font-size: 14px'>----------<br>Clock<br>Off<br>----------</button></a>";
   }
   webpage += "          </td>";
   webpage += "          <td>";
   if (weatherScroll == 0) {
-    webpage += "<a href=\"/weatherScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
+    webpage += "<a href=\"/weatherScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/weatherScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
+    webpage += "<a href=\"/weatherScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
   }
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
-#ifdef USE_DHT || USE_DHT12
+#if defined(USE_DHT) || defined(USE_DHT12)
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
 #ifdef USE_DHT
   webpage += "          <td>";
   if (indoorScroll == 0) {
-    webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>INDOOR<br>Off<br>----------</button></a>";
+    webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>INDOOR<br>Off<br>----------</button></a>";
   }
   webpage += "          </td>";
 #endif
 #ifdef USE_DHT12
   webpage += "          <td>";
   if (outdoorScroll == 0) {
-    webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
   } else {
-    webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 12px'>----------<br>Scrolling<br>OUTDOOR<br>Off<br>----------</button></a>";
+    webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>OUTDOOR<br>Off<br>----------</button></a>";
   }
   webpage += "          </td>";
 #endif
@@ -458,22 +464,6 @@ void update_webpage() {
   webpage += "          <td><a href=\"/onTimeALARM\"\"><button class='ct-btn green en-01' style='font-size: 14px'>On-time Alarm</button></a></td>";
 //  webpage += "          <td></td>";
 //  webpage += "          <td><a href=\"/alarmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Alarm</button></a></td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center' width='100%'>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  webpage += "<hr>";  // ===========================================================
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center'>";
-  webpage += "        <tr align='center'>";
-  webpage += "          <td><a href=\"/updateDATA\"\"><button class='ct-btn green en-01' style='font-size: 14px'>Update Data</button></a></td>";
-  webpage += "          <td></td>";
-  webpage += "          <td><a href=\"/ESPrestart\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Restart</button></a></td>";
-  webpage += "          <td></td>";
-  webpage += "          <td><a href=\"/resetAP\"\"><button class='ct-btn red en-01' style='font-size: 14px'>Reset AP</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "    </div>";
@@ -599,7 +589,7 @@ void update_webpage() {
   } else {
     webpage += "Off<br>";
   }
-  webpage += "<hr width='70%'>";  // ===========================================================
+  webpage += "<hr width='70%'>";  // ===============================================
   webpage += "    - Number of MAX7219's: ";
   webpage += NUM_MAX;
   webpage += "<br>";
@@ -647,6 +637,22 @@ void update_webpage() {
   }
   webpage += "<br>";
   webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td><a href=\"/updateDATA\"\"><button class='ct-btn green en-01' style='font-size: 14px'>Update Data</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/ESPrestart\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Restart</button></a></td>";
+  webpage += "          <td></td>";
+  webpage += "          <td><a href=\"/resetAP\"\"><button class='ct-btn red en-01' style='font-size: 14px'>Reset AP</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
   webpage += "    </div>";
@@ -956,7 +962,7 @@ void lamp00on() {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn On", stringShiftDelay);
   digitalWrite(GREEN_PIN, HIGH);
-#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
+#ifdef   USE_RGB_LED
   button00count++;
   if (button00count == 1) {
     colorWipe(strip.Color(255, 255, 255), 10);     // White
@@ -989,7 +995,7 @@ void lamp00off() {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn Off", stringShiftDelay);
   digitalWrite(GREEN_PIN,  LOW);  
-#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
+#ifdef   USE_RGB_LED
     colorWipe(strip.Color(  0,   0,   0),  10);
 #endif
   delay(waitScroll);
