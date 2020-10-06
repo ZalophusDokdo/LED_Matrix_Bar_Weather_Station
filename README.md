@@ -8,7 +8,7 @@ LED Matrix Bar Weather Station and Clock Massenger
 
 Video:
 -
-- https://www.youtube.com/embed/51wum5p9660
+- https://www.youtube.com/embed/51wum5p9660 - v1.0.1
 
 Features:
 -
