@@ -69,7 +69,7 @@
   int timeSinceLastRead   =  0;
   int dht12get            =  0;
 #endif
-#ifdef   USE_RGB_LED && RGB_LED_PIN
+#ifdef   USE_RGB_LED
   #include "WS2812B.h"
 #endif
 // =========================================================================
@@ -121,7 +121,7 @@ void setup() {  // #########################################################
 #ifdef   USE_DHT12
   dht12.begin();
 #endif
-#ifdef   USE_RGB_LED && USE_RGB_LED_PIN
+#ifdef   USE_RGB_LED
   RGB_LED_setup();
 #endif
 // =========================================================================
@@ -146,11 +146,6 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
 #ifdef   USE_WEB_SERVER
   Webserver_action();
 #endif
-#ifdef   USE_LEDMATRIX_CLOCKWEATHER
-  if (ledMatrix == 1) {
-    LEDMatrix_action();
-  }
-  if(millis() - clkTime > weatherScrollInterval && !del && dots) {  // clock for 15s, then scrolls for about 30s
 #ifdef   USE_DS18B20
     DS18B20_action();
 #endif
@@ -178,6 +173,9 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
     }
     timeSinceLastRead += 100;
 #endif
+#ifdef   USE_LEDMATRIX_CLOCKWEATHER
+  LEDMatrix_action();
+  if(millis() - clkTime > weatherScrollInterval && !del && dots) {  // clock for 15s, then scrolls for about 30s
     if (dateScroll == 1) {
       LEDMatrix_Date_action();
     }
@@ -193,7 +191,12 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
     updCnt--;
     clkTime = millis();
   }
-  if (digitalRead(RED_PIN)) {  // Alarm On/Off Switch
+#endif
+  if (Clock == 1) {
+    LEDMatrix_Clock_action();
+  }
+  // Alarm On/Off Switch
+  if (digitalRead(RED_PIN)) {
     alarm_state = 1;
     if (printMsg == "") {
       alarm_message = ALARM_MESSAGE;
@@ -251,7 +254,8 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
   } else {
     alarm_state = 0;
   }
-  if (digitalRead(GREEN_PIN)) {  // Lamp Push Button Switch
+  // Lamp Push Button Switch
+  if (digitalRead(GREEN_PIN)) {
 #ifdef   USE_RELAY_PIN
       pinMode(USE_RELAY_PIN, OUTPUT);
       digitalWrite(USE_RELAY_PIN,  HIGH);
@@ -269,7 +273,8 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
       digitalWrite(USE_LED_PIN,  LOW);
 #endif
   }
-  if (digitalRead(BLUE_PIN)) {  // Weather Scroll Push Button Switch
+  // Weather Scroll Push Button Switch
+  if (digitalRead(BLUE_PIN)) {
     if (dateScroll == 0) {
         LEDMatrix_Date_action();
     }
@@ -283,10 +288,6 @@ ESP.wdtFeed(); // feeds the dog // Error: ets jan 8 2013,rst cause:2, boot mode:
         LEDMatrix_Weather_action();
     }
   }
-  if (Clock == 1) {
-    LEDMatrix_Clock_action();
-  }
-#endif
 #ifdef   USE_MQTT
   MQTT_action();
 #endif
