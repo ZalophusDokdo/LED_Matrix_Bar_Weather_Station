@@ -6,6 +6,10 @@ LED Matrix Bar Weather Station and Clock Massenger
   </a>
 </p>
 
+Video:
+-
+- https://www.youtube.com/embed/51wum5p9660 - v1.0.1
+
 Features:
 -
 - ESP8266 WeMos D1 mini module which I finally found good application for (now you can buy better cheap ESPs)
