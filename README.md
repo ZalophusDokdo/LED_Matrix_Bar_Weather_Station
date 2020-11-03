@@ -16,7 +16,7 @@ Features:
 - 6 x LEDMatrix module with MAX7219 driver
 - supplied directly from USB port with USB plug
 - all data are synchronized every 7-8 minutes
-- time and date are taken from google.com
+- time and date are taken from NTP
 - weather informations are grabbed from openweather.org JSON api
 - no hardware RTC clock is necessary
 + internal temperature, humidity sensor (options - DS18B20(Internal), DHT22(Indoor), DHT12(Outdoor))
