@@ -89,7 +89,7 @@ Find and Install
 - Adafruit_NeoPixel by Adafruit Version 1.1.2
 
 --------------
-After install select ESP9266 board.
+After install select ESP8266 board.
 - Board: NodeMCU 1.0 (ESP-12E Module)
 - Upload Speed: "115200"
 - CPU Frequency: "80 MHz"
