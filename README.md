@@ -90,8 +90,8 @@ Find and Install
 
 --------------
 After install select ESP8266 board.
-- Board: NodeMCU 1.0 (ESP-12E Module)
-- Upload Speed: "115200"
+- Board: WeMos D1 R2 & mini
+- Upload Speed: "921600"
 - CPU Frequency: "80 MHz"
 - Flash Size: "4M (3M SPIFFS)"
 - Port: COM?? 
