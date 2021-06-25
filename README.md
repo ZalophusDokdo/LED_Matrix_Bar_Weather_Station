@@ -1,23 +1,23 @@
 # ESP8266 LED Matrix Bar Weather Station (Version 1.0.4)
 LED Matrix Bar Weather Station and Clock Massenger
 <p align="center">
-	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_01.png?raw=true">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_01.png?raw=true" width="100%">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_01.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_01.png?raw=true" width="100%">
   </a>
 </p>
 <p align="center">
-	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_02.png?raw=true">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_02.png?raw=true" width="100%">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_02.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_02.png?raw=true" width="100%">
   </a>
 </p>
 <p align="center">
-	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_03.png?raw=true">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_03.png?raw=true" width="100%">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_03.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_03.png?raw=true" width="100%">
   </a>
 </p>
 <p align="center">
-	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_24.png?raw=true">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_24.png?raw=true" width="100%">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_24.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_24.png?raw=true" width="100%">
   </a>
 </p>
 
@@ -157,8 +157,8 @@ Schematic is available here:
 ---------------
 WebApp:
 <p align="center">
-  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-pc-2021-06-25-20_23_22.png">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-pc-2021-06-25-20_23_22.png" width="100%">
+  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-pc-2021-06-25-20_23_22.png">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-pc-2021-06-25-20_23_22.png" width="100%">
   </a>
   <br>
   <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-mobile-2021-06-25-20_04_00.png">
