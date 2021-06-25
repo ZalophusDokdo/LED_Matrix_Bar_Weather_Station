@@ -1,13 +1,49 @@
 # ESP8266 LED Matrix Bar Weather Station (Version 1.0.4)
 LED Matrix Bar Weather Station and Clock Massenger
 <p align="center">
-	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LED_Matrix_Bar_Weather_Station_V1_001.jpg?raw=true">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LED_Matrix_Bar_Weather_Station_V1_001.jpg?raw=true" width="100%">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_01.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_01.png?raw=true" width="100%">
+  </a>
+</p>
+<p align="center">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_02.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_02.png?raw=true" width="100%">
+  </a>
+</p>
+<p align="center">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_03.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_03.png?raw=true" width="100%">
+  </a>
+</p>
+<p align="center">
+	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_24.png?raw=true">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V2_24.png?raw=true" width="100%">
   </a>
 </p>
 
+Firmware Version: V1.0.4b
+=========================
+- Change WebApp scroll control (2021/01/11)
+- Added timer setting (2020/10/13)
+- Added alarm message setting function:
+  .................Set scroll message to alarm message (2020/09/13)
+- Added alarm setting (2020/09/10)
+- AM-PM Mode, 24-hour clock, 12-hour clock (2020/09/09)
+- Google clock replaced with NTP clock (2020/09/07)
+- Resolved a problem that initialized when receiving Google clock
+- Added web page refresh time (2020/09/06)
+- Added RGB LED (2020/09/05)
+- Error: ets jan 8 2013,rst cause:2, boot mode:(3,6) (2020/09/05)
+- Added MQTT - Adafruit IO MQTT + IFTTT + Google Assistant (2020/07/30)
+- Update Count 7.5m to 60m (2020/07/22)
+- Added CHAR_SHIFT_DELAY - Config (2020/07/22)
+- Change DHT12 Library (2018/03/12)
+
 Video:
 -
+- https://youtu.be/NvMaL1UP2G4 - v1.0.4b
+- - https://youtu.be/KqBzKSkwXMY - RGB LED Lamp Testing
+- - https://youtu.be/YhxY4NB5p2Y - Dual LED Matix Display Testing
 - https://www.youtube.com/embed/51wum5p9660 - v1.0.1
 
 Features:
@@ -42,9 +78,10 @@ Fuctions:
 
 BOM
 -
-- 6 x MAX7219 8 x 8 LED Matrix module
+- 6 x MAX7219 8x8 Matrix LED
 - 1 x WeMos D1 mini
-- 1 x Interface Shield
+- 1 x Interface shield
+Additional Parts:
 - 1 x DS18B20 temperature sensor (Option)
 - 1 x DHT22 temperature and humidity sensor (Option)
 - 1 x DHT12 temperature and humidity sensor (Option)
@@ -112,18 +149,20 @@ Schematic is available here:
 
 ---------------
 3D Parts:
-- Pinshape : https://pinshape.com/items/46659-3d-printed-led-matrix-bar-weather-station-v1
-- Thingiverse : https://www.thingiverse.com/thing:2650808
+ - V2: http://shop.bluecomtech.com/ko_KR/product/led-matrix-bar-weather-station-v2-case-stnad
+ - V3: http://shop.bluecomtech.com/ko_KR/product/led-matrix-bar-weather-station-v3-case-stnad
+ - Pinshape : https://pinshape.com/items/46659-3d-printed-led-matrix-bar-weather-station-v1
+ - Thingiverse : https://www.thingiverse.com/thing:2650808
 
 ---------------
 WebApp:
 <p align="center">
-  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-2020-10-06-02_29_31.png">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-2020-10-06-02_29_31.png" width="100%">
+  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-pc-2021-06-25-20_23_22.png">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledMatrixbarweatherstation-pc-2021-06-25-20_23_22.png" width="100%">
   </a>
   <br>
-  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-2020-10-06-02_31_46.png">
-    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-2020-10-06-02_31_46.png" width="30%">
+  <a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-mobile-2021-06-25-20_04_00.png">
+    <img src="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/screencapture-ledmatrixbarweatherstation-mobile-2021-06-25-20_04_00.png" width="30%">
   </a>
 </p>
 
