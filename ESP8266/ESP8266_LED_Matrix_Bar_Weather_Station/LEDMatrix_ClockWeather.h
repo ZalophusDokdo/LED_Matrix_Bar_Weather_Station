@@ -37,8 +37,8 @@ float  windSpeed;
 String date;
 String weatherString;
 
-#include "max7219.h"
-#include "fonts.h"
+#include "MAX7219.h"
+#include "Fonts.h"
 
 // =======================================================================
 String weatherKey           = WEATHER_KEY;
@@ -160,7 +160,7 @@ void setCol(int col, byte v) {
 void showSimpleClock() {
   dx = dy = 0;
   clr();
-  showDigit(h/10,  0, dig6x8);
+  showDigit(h/10,  0, dig6x8); 
   showDigit(h%10,  8, dig6x8);
   showDigit(m/10, 17, dig6x8);
   showDigit(m%10, 25, dig6x8);
@@ -168,6 +168,16 @@ void showSimpleClock() {
   showDigit(s%10, 42, dig6x8);
   setCol(15,dots ? B00100100 : 0);
   setCol(32,dots ? B00100100 : 0);
+/*  Number of MAX7219's connected
+  showDigit(h/10,  8, dig6x8); 
+  showDigit(h%10, 16, dig6x8);
+  showDigit(m/10, 25, dig6x8);
+  showDigit(m%10, 33, dig6x8);
+  showDigit(s/10, 42, dig6x8);
+  showDigit(s%10, 50, dig6x8);
+  setCol(23,dots ? B00100100 : 0);
+  setCol(40,dots ? B00100100 : 0);
+ */
   refreshAll();
 }
 
@@ -361,6 +371,7 @@ void LEDMatrix_ClockWeather_setup() {
 #ifdef USE_UART
   Serial.print("Connecting WiFi ");
 #endif
+#ifdef USE_LED_MATRIX
   printStringWithShift(projectName, 15);
   delay(1000);
   printStringWithShift("        ", 15);
@@ -368,38 +379,39 @@ void LEDMatrix_ClockWeather_setup() {
   delay(1000);
   printStringWithShift("                ", 15);
   delay(1000);
-  printStringWithShift("Connecting    ", 30);
+  printStringWithShift("Connecting    ", 20);
   char result[16];
   sprintf(result, "%3d.%3d.%1d.%3d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
-  printStringWithShift(result, 35);
+  printStringWithShift(result, 25);
+#endif
   ntpTime_start();
 }
 
-void LEDMatrix_DHT22_action() {
 #ifdef USE_DHT
-  char dht22cTemp[10]    = "";
-  char dht22Humidity[10] = "";
-  dtostrf(dht.readTemperature(), 3, 1, dht22cTemp);
-  dtostrf(dht.readHumidity(), 3, 1, dht22Humidity);
+void LEDMatrix_DHT_action() {
+  char dhtCTemp[10]    = "";
+  char dhtHumidity[10] = "";
+  dtostrf(dht.readTemperature(), 3, 1, dhtCTemp);
+  dtostrf(dht.readHumidity(), 3, 1, dhtHumidity);
   String deg = String(char('~'+25));
-  if(dht22get == 0) {
+  if(dhtGet == 0) {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("INDOOR", stringShiftDelay);
   printStringWithShift("   ", stringShiftDelay);
   printStringWithShift("Temp: ", stringShiftDelay);
-  printStringWithShift(dht22cTemp, stringShiftDelay);
+  printStringWithShift(dhtCTemp, stringShiftDelay);
   printStringWithShift(deg.c_str(), stringShiftDelay);
   printStringWithShift("C", stringShiftDelay);
   printStringWithShift("   ", stringShiftDelay);
   printStringWithShift("Humidity: ", stringShiftDelay);
-  printStringWithShift(dht22Humidity, stringShiftDelay);
+  printStringWithShift(dhtHumidity, stringShiftDelay);
   printStringWithShift("%   ", stringShiftDelay);
   printStringWithShift("                ", stringShiftDelay);
   }
-#endif
 }
-void LEDMatrix_DHT12_action() {
+#endif
 #ifdef USE_DHT12
+void LEDMatrix_DHT12_action() {
   char dht12cTemp[10]    = "";
   char dht12Humidity[10] = "";
   dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
@@ -419,8 +431,8 @@ void LEDMatrix_DHT12_action() {
   printStringWithShift("%   ", stringShiftDelay);
   printStringWithShift("                ", stringShiftDelay);
   }
-#endif
 }
+#endif
 
 void LEDMatrix_Date_action() {
   printStringWithShift(date.c_str(),          stringShiftDelay);
@@ -449,7 +461,9 @@ void LEDMatrix_action() {
 #ifdef USE_UART
     Serial.println("Getting data ...");
 #endif
+#ifdef USE_LED_MATRIX
     printStringWithShift("   Getting data", 15);
+#endif
     ntpTime();
     getWeatherData();
 #ifdef USE_UART

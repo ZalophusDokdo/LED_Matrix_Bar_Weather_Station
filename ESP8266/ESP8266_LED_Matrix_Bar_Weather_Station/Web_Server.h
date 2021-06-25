@@ -3,7 +3,7 @@
  *  Date: 31/08/2017       (https://zalophus.tistory.com/)
  *  License: GPL v2
  * =========================================================================
- *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
+ *  LED Matrix Bar Weather Station V1.0.4b (Publish: 2018/01/02)
  * =========================================================================
  *  Web Server
  * =========================================================================
@@ -17,38 +17,51 @@
 // Set the port you wish to use, a browser default is 80, but any port can be used, if you set it to 5555 then connect with http://nn.nn.nn.nn:5555/
 ESP8266WebServer server(80);
 
-String webTitle          = WEB_TITLE;
-String webSubTitle       = WEB_SUBTITLE;
-int    webPageRefresh    = WEB_PAGE_REFRESH;
+String webTitle                = WEB_TITLE;
+String webSubTitle             = WEB_SUBTITLE;
+String iconLink                = ICON_LINK;
+String faviconLink             = FAVICON_LINK;
+int    webPageRefresh          = WEB_PAGE_REFRESH;
+String webInternalTempTitle    = WEB_INTERNALTEMPTITLE;
 
-int    OTAmode           = OTA_MODE;
-int    ledMatrix         = LED_MATRIX;
-int    Clock             = CLOCK;
-int    dateScroll        = DATE_SCROLL;
-int    weatherScroll     = WEATHER_SCROLL;
-int    indoor            = INDOOR;
-int    outdoor           = OUTDOOR;
-int    indoorScroll      = INDOOR_SCROLL;
-int    outdoorScroll     = OUTDOOR_SCROLL;
-int    waitScroll        = WAIT_SCROLL;
+int    OTAmode                 = OTA_MODE;
+int    Clock                   = CLOCK;
+int    dateScroll              = DATE_SCROLL;
+int    weatherScroll           = WEATHER_SCROLL;
+int    indoor                  = INDOOR;
+int    outdoor                 = OUTDOOR;
+int    indoorScroll            = INDOOR_SCROLL;
+int    outdoorScroll           = OUTDOOR_SCROLL;
+int    waitScroll              = WAIT_SCROLL;
 
 extern "C" {
   uint16 readvdd33(void);
 }
 
-String deg               = String(char('~'+25));
-String webpage           = "";
+String deg                     = String(char('~'+25));
+String webpage                 = "";
 String printMsg;
 
-int    onTimeAlarm       = 0;
-int    alarm_state       = ALARM_STATE;
-int    alarm_h_set       = ALARM_H_SET;
-int    alarm_m_set       = ALARM_M_SET;
-String alarm_ampm_select = "AM";
+int    onTimeAlarm             = 0;
+int    alarm_state             = ALARM_STATE;
+int    alarm_h_set             = ALARM_H_SET;
+int    alarm_m_set             = ALARM_M_SET;
+String alarm_ampm_select       = "AM";
 
-int    button16count     = 0;
-int    button00count     = 0;
-int    button12count     = 0;
+int    timer_state             = TIMER_STATE;
+int    timer_h_start           = TIMER_H_START;
+int    timer_m_start           = TIMER_M_START;
+int    timer_h_stop            = TIMER_H_STOP;
+int    timer_m_stop            = TIMER_M_STOP;
+String timer_start_ampm_select = "AM";
+String timer_stop_ampm_select  = "AM";
+
+int    button16count           = 0;
+int    button00count           = 0;
+int    button12count           = 0;
+#if defined(DEV_BOARD_Witty) || defined(DEV_BOARD_WiFi_RELAY_MODULE)
+  int  light05on_state         = 0;
+#endif
 
 void append_webpage_header() {
   // webpage is a global variable
@@ -56,13 +69,13 @@ void append_webpage_header() {
   webpage += "<!DOCTYPE HTML>";
   webpage += "<html>";
   webpage += "<head>";
-  webpage += "<meta http-equiv='refresh' content='" + String(webPageRefresh) + "; url=./' />";
-  webpage += "<meta name='apple-mobile-web-app-capable' content='yes' />";
-  webpage += "<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />";
-  webpage += "<link rel='apple-touch-icon' href='https://raw.githubusercontent.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/master/images/electronic_clock_1200_811483_512.png' />";
-  webpage += "<link rel='shortcut icon' href='favicon.ico' />";
-  webpage += "  <title>LED Matrix Bar - Zalophus's DesignHouse</title>";
+  webpage += "  <meta http-equiv='refresh' content='" + String(webPageRefresh) + "; url=./' />";
+  webpage += "  <meta name='apple-mobile-web-app-capable' content='yes' />";
+  webpage += "  <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />";
   webpage += "  <meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+  webpage += "  <link rel='apple-touch-icon' href='" + iconLink + "' />";
+  webpage += "  <link rel='shortcut icon' href='" + faviconLink + "' />";
+  webpage += "  <title>" + webTitle + " - Zalophus's DesignHouse</title>";
   webpage += "  <style>";
   webpage += "    #jb-container { width: 940px; margin: 0px auto; padding: 10px; border: 1px solid #bcbcbc; }";
   webpage += "    #jb-header { padding: 0px; margin-bottom: 10px; border: 1px solid #bcbcbc; }";
@@ -153,12 +166,13 @@ void update_webpage() {
   webpage += "            <br>";
   webpage += "            Type your message<br>";
   webpage += "            <form action='msg'>";
-  webpage += "            <input type='text' name='msg' size=35% autofocus><br>";
-  webpage += "            <input class='ct-btn blue en-01' style='font-size: 26px' type='submit' value='Submit'>";
+  webpage += "              <input type='text' name='msg' size=35% autofocus><br>";
+  webpage += "              <input class='ct-btn blue en-01' style='font-size: 26px' type='submit' value='Submit'>";
   webpage += "            </form>";
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
+#if defined(USE_DHT) || defined(USE_DHT12)
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr>";
   webpage += "          <td>";
@@ -166,7 +180,6 @@ void update_webpage() {
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
-#if defined(USE_DHT) || defined(USE_DHT12)
   #ifndef USE_DHT
     outdoor = 1;
   #endif
@@ -177,10 +190,10 @@ void update_webpage() {
   webpage += "        <tr align='center'>";
   #ifdef USE_DHT
     if (indoor == 1) {
-      if(dht22get == 0) {
+      if(dhtGet == 0) {
         webpage += "    <td>";
         webpage += " < ";
-        webpage += dht22cTemp;
+        webpage += dhtCTemp;
         webpage += " 'C >";
         webpage += "    </td>";
       }
@@ -205,16 +218,16 @@ void update_webpage() {
   #endif
   #ifdef USE_DHT12
     if (outdoor == 1) {
-      webpage += "      <td><b>OUTDOOR</b>";
+      webpage += "      <td><b>" + webInternalTempTitle + "</b>";
       webpage += "      </td>";
     }
   #endif
   #ifdef USE_DHT
     if (indoor == 1) {
-      if(dht22get == 0) {
+      if(dhtGet == 0) {
         webpage += "    <td>";
         webpage += " < ";
-        webpage += dht22Humidity;
+        webpage += dhtHumidity;
         webpage += " % >";
         webpage += "    </td>";
       }
@@ -243,13 +256,13 @@ void update_webpage() {
     #ifndef USE_DHT12
       webpage += "            <td>";
       if (dht.readTemperature() > 35 && dht.readHumidity() > 60) { 
-        webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
       } else if (dht.readTemperature() > 29 && dht.readHumidity() > 40) { 
-        webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
       } else if (dht.readTemperature() < 20 && dht.readHumidity() < 30) {
-        webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
       } else {
-        webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+        webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
       }
       webpage += "            </td>";
     #else
@@ -272,13 +285,13 @@ void update_webpage() {
     #ifndef USE_DHT
       webpage += "            <td>";
       if (dht12.readTemperature() > 35 && dht12.readHumidity() > 60) { 
-        webpage += "<button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button>";
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 44px'>-- Hot --</button></a>";
       } else if (dht12.readTemperature() > 29 && dht12.readHumidity() > 40) { 
-        webpage += "<button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button>";
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 44px'>- Warm -</button></a>";
       } else if (dht12.readTemperature() < 20 && dht12.readHumidity() < 30) {
-        webpage += "<button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button>";
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 44px'>- Cold -</button></a>";
       } else {
-        webpage += "<button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button>";
+        webpage += "<a href=\"/outDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
       }
       webpage += "            </td>";
     #else
@@ -292,7 +305,7 @@ void update_webpage() {
       } else {
         webpage += "<a href=\"/inDoor\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 44px'>- Good -</button></a>";
       }
-        webpage += "            </td>";
+        webpage += "          </td>";
     #endif
     }
   #endif
@@ -301,6 +314,8 @@ void update_webpage() {
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
+#endif
+#ifdef USE_LED_MATRIX
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr>";
   webpage += "          <td>";
@@ -308,7 +323,240 @@ void update_webpage() {
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+ #ifndef USE_TIMER
+  webpage += "          <td>";
+  if (dateScroll == 0) {
+    webpage += "<a href=\"/dateScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/dateScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
+  }
+  webpage += "          </td>";
+ #endif
+  #ifdef USE_LED_MATRIX
+    webpage += "        <td>";
+    if (weatherScroll == 1 || dateScroll == 1) {
+      webpage += "<a href=\"/scroll12off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>Full<br>Scroll Off</button></a>";
+    } else {
+      webpage += "<a href=\"/scroll12on\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>Full<br>Scroll On</button></a>";
+    };
+    webpage += "        </td>";
+  #endif
+ #ifndef USE_TIMER
+  webpage += "          <td>";
+  if (weatherScroll == 0) {
+    webpage += "<a href=\"/weatherScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/weatherScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
+  }
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  #if defined(USE_DHT)
+    #ifdef USE_DHT
+      webpage += "      <td>";
+      if (indoorScroll == 0) {
+        webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>------------------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
+      } else {
+        webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>------------------<br>Scrolling<br>INDOOR<br>----------</button></a>";
+      }
+      webpage += "      </td>";
+    #endif
+  #endif
+  #if defined(USE_DHT12)
+    #ifdef USE_DHT12
+      webpage += "      <td>";
+      if (outdoorScroll == 0) {
+        webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>------------------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
+      } else {
+        webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>------------------<br>Scrolling<br>OUTDOOR<br>----------</button></a>";
+      }
+      webpage += "      </td>";
+    #endif
+  #endif
+  webpage += "        </tr>";
+  webpage += "      </table>";
+/*
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td><a href=\"/button00\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>I<br>love<br>you<br>----------</button></a></td>";
+  webpage += "          <td><a href=\"/button01\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Don't<br>get<br>upset<br>----------</button></a></td>";
+  webpage += "          <td><a href=\"/button02\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>I'm<br>upset<br><br>----------</button></a></td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "         <td><a href=\"/button03\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Catch me<br>if<br>you can<br>----------</button></a></td>";
+  webpage += "          <td><a href=\"/button04\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>You will<br>never know<br>until you try<br>----------</button></a></td>";
+  webpage += "          <td><a href=\"/button05\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Pain past<br>is<br>pleasure<br>----------</button></a></td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+ */
+ #endif
 #endif
+#if defined(DEV_BOARD_Witty) || defined(DEV_BOARD_WiFi_RELAY_MODULE)
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  #ifdef USE_LIGHT
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  #ifdef DEV_BOARD_Witty
+  if (digitalRead(USE_LIGHT_PIN) || light05on_state == 1) {
+  #endif
+  #ifdef DEV_BOARD_WiFi_RELAY_MODULE 
+  if (digitalRead(USE_INPUT_PIN) || light05on_state == 1) {
+  #endif
+    webpage += "<a href=\"/light05off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Lamp<br>Off<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/light05on\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>----------<br>Lamp<br>On<br>----------</button></a>";
+  }
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  #endif
+  webpage += "      </table>";
+#endif
+#ifdef   USE_RGB_LED_NEOPIXEL
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<b>[ RGB LED (WS2812B) ]</b><br>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledRed\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>--------<br>Red<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledGreen\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>--------<br>Green<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledBlue\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>--------<br>Blue<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledWhite\"\"><button type='submit' class='ct-btn White en-01' style='font-size: 14px'>--------<br>White<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  if (digitalRead(GREEN_PIN)) { 
+    webpage += "<a href=\"/lamp00off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Lamp<br>Off<br>----------</button></a>";
+  } else {
+    webpage += "<a href=\"/lamp00on\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>----------<br>Lamp<br>On<br>----------</button></a>";
+  }
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledBlank\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>--------<br>Blank<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
+#ifdef   USE_RGB_LED_DIRECT
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<b>[ RGB LED Direct ]</b><br>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledDirectRed\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>--------<br>Red<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledDirectGreen\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>--------<br>Green<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledDirectBlue\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>--------<br>Blue<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledDirectWhite\"\"><button type='submit' class='ct-btn white en-01' style='font-size: 14px'>--------<br>White<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledDirectBlank\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>--------<br>Blank<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
+#ifdef   USE_RGB_LED_STRIP_DRIVER
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<b>[ RGB LED Strip Driver ]</b><br>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledStripRed\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>--------<br>Red<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledStripGreen\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>--------<br>Green<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledStripBlue\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>--------<br>Blue<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledStripWhite\"\"><button type='submit' class='ct-btn white en-01' style='font-size: 14px'>--------<br>White<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "          <td>";
+  webpage += "<a href=\"/ledStripBlank\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>--------<br>Blank<br>------</button></a>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<b>[ Clock ]</b><br>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
   webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
@@ -319,105 +567,21 @@ void update_webpage() {
   }
   webpage += "          </td>";
   webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
-  webpage += "          <td>";
-  if (dateScroll == 0) {
-    webpage += "<a href=\"/dateScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/dateScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Date<br>----------</button></a>";
-  }
-  webpage += "          </td>";
   webpage += "          <td>";
   if (Clock == 0) {
-    webpage += "<a href=\"/ClockOn\"\"><button class='ct-btn red en-01' style='font-size: 14px'>----------<br>Clock<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/ClockOn\"\"><button class='ct-btn red en-01' style='font-size: 14px'>- Clock On -</button></a>";
   } else {
-    webpage += "<a href=\"/ClockOff\"\"><button class='ct-btn green en-01' style='font-size: 14px'>----------<br>Clock<br>Off<br>----------</button></a>";
-  }
-  webpage += "          </td>";
-  webpage += "          <td>";
-  if (weatherScroll == 0) {
-    webpage += "<a href=\"/weatherScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/weatherScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>Weather<br>----------</button></a>";
+    webpage += "<a href=\"/ClockOff\"\"><button class='ct-btn green en-01' style='font-size: 14px'>- Clock Off -</button></a>";
   }
   webpage += "          </td>";
   webpage += "        </tr>";
-  webpage += "      </table>";
-#if defined(USE_DHT) || defined(USE_DHT12)
-  webpage += "      <table align='center' width='100%'>";
-  webpage += "        <tr align='center'>";
-#ifdef USE_DHT
-  webpage += "          <td>";
-  if (indoorScroll == 0) {
-    webpage += "<a href=\"/inDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>INDOOR<br>On<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/inDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>INDOOR<br>Off<br>----------</button></a>";
-  }
-  webpage += "          </td>";
-#endif
-#ifdef USE_DHT12
-  webpage += "          <td>";
-  if (outdoorScroll == 0) {
-    webpage += "<a href=\"/outDoorScrollOn\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scrolling<br>OUTDOOR<br>On<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/outDoorScrollOff\"\"><button class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scrolling<br>OUTDOOR<br>Off<br>----------</button></a>";
-  }
-  webpage += "          </td>";
-#endif
-  webpage += "        </tr>";
-  webpage += "      </table>";
-#endif
-  webpage += "      <table align='center' width='100%'>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  webpage += "<hr>";  // ===========================================================
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-/*
-  webpage += "      <table align='center' width='100%'>";
-  webpage += "        <tr align='center'>";
-  webpage += "          <td><a href=\"/button00\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>I<br>love<br>you<br>----------</button></a></td>";
-  webpage += "          <td><a href=\"/button01\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Don't<br>get<br>upset<br>----------</button></a></td>";
-  webpage += "          <td><a href=\"/button02\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>I'm<br>upset<br><br>----------</button></a></td>";
-  webpage += "        </tr>";
-  webpage += "        <tr align='center'>";
-  webpage += "          <td><a href=\"/button03\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Catch me<br>if<br>you can<br>----------</button></a></td>";
-  webpage += "          <td><a href=\"/button04\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>You will<br>never know<br>until you try<br>----------</button></a></td>";
-  webpage += "          <td><a href=\"/button05\"\"><button class='ct-btn white en-01' style='font-size: 12px'>----------<br>Pain past<br>is<br>pleasure<br>----------</button></a></td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
-  webpage += "      <table align='center' width='100%'>";
-  webpage += "        <tr>";
-  webpage += "          <td>";
-  webpage += "<hr>";  // ===========================================================
-  webpage += "          </td>";
-  webpage += "        </tr>";
-  webpage += "      </table>";
- */
-  webpage += "      <table align='center' width='100%'>";
   webpage += "        <tr align='center'>";
   webpage += "          <td>";
   if (digitalRead(RED_PIN)) { 
-    webpage += "<a href=\"/alarm16off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Alarm<br>Off<br>----------</button></a>";
+    webpage += "<a href=\"/alarm16off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 26px'>Alarm Off</button></a>";
   } else {
-    webpage += "<a href=\"/alarm16on\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 14px'>----------<br>Alarm<br>On<br>----------</button></a>";
-  };
-  webpage += "          </td>";
-  webpage += "          <td>";
-  if (digitalRead(GREEN_PIN)) { 
-    webpage += "<a href=\"/lamp00off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Lamp<br>Off<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/lamp00on\"\"><button type='submit' class='ct-btn green en-01' style='font-size: 14px'>----------<br>Lamp<br>On<br>----------</button></a>";
-  }
-  webpage += "          </td>";
-  webpage += "          <td>";
-  if (digitalRead(BLUE_PIN)) { 
-    webpage += "<a href=\"/scroll12off\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 14px'>----------<br>Scroll<br>Off<br>----------</button></a>";
-  } else {
-    webpage += "<a href=\"/scroll12on\"\"><button type='submit' class='ct-btn blue en-01' style='font-size: 14px'>----------<br>Scroll<br>On<br>----------</button></a>";
+    webpage += "<a href=\"/alarm16on\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 26px'>Alarm On</button></a>";
   };
   webpage += "          </td>";
   webpage += "        </tr>";
@@ -466,6 +630,99 @@ void update_webpage() {
 //  webpage += "          <td><a href=\"/alarmOnOff\"\"><button class='ct-btn blue en-01' style='font-size: 14px'>Alarm</button></a></td>";
   webpage += "        </tr>";
   webpage += "      </table>";
+#ifdef USE_TIMER  
+  webpage += "      <table align='center' width='100%'>";
+  webpage += "        <tr>";
+  webpage += "          <td>";
+  webpage += "<hr>";  // ===========================================================
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "<b>[ Timer ]</b><br>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "    Start Time<br>";
+  webpage += "            <form action='timerStart'>";
+  if (am_pm == 12) {
+    webpage += "          <label for='ampm'>Choose a AM/PM:</label><br>";
+    webpage += "          <select id='ampm' name='ampm'>";
+    if (timer_start_ampm_select == "AM") {
+      webpage += "          <option value='AM' selected='selected'>AM</option>";
+    } else {
+      webpage += "          <option value='AM'>AM</option>";
+    }
+    if (timer_start_ampm_select == "PM") {
+      webpage += "          <option value='PM' selected='selected'>PM</option>";  
+    } else {
+      webpage += "          <option value='PM'>PM</option>";  
+    }
+    webpage += "          </select>";
+    webpage += "          <input type='number' min='01' max='12' name='timer_h_time' value='";
+    webpage += String(timer_h_start);
+    webpage += "' size=10% autofocus>:";
+  } else {
+    webpage += "          <input type='number' min='00' max='23' name='timer_h_time' value='";
+    webpage += String(timer_h_start);
+    webpage += "' size=10% autofocus>:";
+  }
+  webpage += "            <input type='number' min='00' max='59' name='timer_m_time' value='";
+  webpage += String(timer_m_start);
+  webpage += "' size=10% autofocus> ";
+  webpage += "            <input class='ct-btn blue en-01' style='font-size: 12px' type='submit' value='Submit'>";
+  webpage += "            </form>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  webpage += "    Stop Time<br>";
+  webpage += "            <form action='timerStop'>";
+  if (am_pm == 12) {
+    webpage += "          <label for='ampm'>Choose a AM/PM:</label><br>";
+    webpage += "          <select id='ampm' name='ampm'>";
+    if (timer_stop_ampm_select == "AM") {
+      webpage += "          <option value='AM' selected='selected'>AM</option>";
+    } else {
+      webpage += "          <option value='AM'>AM</option>";
+    }
+    if (timer_stop_ampm_select == "PM") {
+      webpage += "          <option value='PM' selected='selected'>PM</option>";  
+    } else {
+      webpage += "          <option value='PM'>PM</option>";  
+    }
+    webpage += "          </select>";
+    webpage += "          <input type='number' min='01' max='12' name='timer_h_time' value='";
+    webpage += String(timer_h_stop);
+    webpage += "' size=10% autofocus>:";
+  } else {
+    webpage += "          <input type='number' min='00' max='23' name='timer_h_time' value='";
+    webpage += String(timer_h_stop);
+    webpage += "' size=10% autofocus>:";
+  }
+  webpage += "            <input type='number' min='00' max='59' name='timer_m_time' value='";
+  webpage += String(timer_m_stop);
+  webpage += "' size=10% autofocus> ";
+  webpage += "            <input class='ct-btn blue en-01' style='font-size: 12px' type='submit' value='Submit'>";
+  webpage += "            </form>";
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+  webpage += "      <table align='center'>";
+  webpage += "        <tr align='center'>";
+  webpage += "          <td>";
+  if (timer_state == 1) { 
+    webpage += "<a href=\"/timerOff\"\"><button type='submit' class='ct-btn yellow en-01' style='font-size: 26px'>Timer Off</button></a>";
+  } else {
+    webpage += "<a href=\"/timerOn\"\"><button type='submit' class='ct-btn red en-01' style='font-size: 26px'>Timer On</button></a>";
+  };
+  webpage += "          </td>";
+  webpage += "        </tr>";
+  webpage += "      </table>";
+#endif
   webpage += "    </div>";
   webpage += "    <div id='jb-sidebar'>";
   webpage += "      <table>";
@@ -496,34 +753,42 @@ void update_webpage() {
   webpage += ".local/";
   webpage += "</a>";
   webpage += "          <br>";
-  webpage += "<hr>";  //==================================
+  webpage += "<hr>";  // ===========================================================
 #ifdef USE_DS18B20
   webpage += "[ DS18B20 ] - INSIDE<br>";
   if (ds18b20get == 0) {
-  webpage += "    - ";
-  webpage += "Temperature: ";
-  webpage += sensors.getTempCByIndex(0);
-  webpage += " 'C ( ";
-  webpage += sensors.getTempFByIndex(0);
-  webpage += " 'F )<br>";
+    webpage += "    - ";
+    webpage += "Temperature: ";
+    webpage += sensors.getTempCByIndex(0);
+    webpage += " 'C ( ";
+    webpage += sensors.getTempFByIndex(0);
+    webpage += " 'F )<br>";
+    #ifdef USE_DS18B20_A
+      webpage += "  - ";
+      webpage += "Temperature: ";
+      webpage += sensors.getTempCByIndex(1);
+      webpage += " 'C ( ";
+      webpage += sensors.getTempFByIndex(1);
+      webpage += " 'F )<br>";
+    #endif
   } else if (ds18b20get == 1){
-  webpage += "    - <font color='red'>Sensor error or disconnected</font><br>";
+    webpage += "  - <font color='red'>Sensor error or disconnected</font><br>";
   }
 #endif
 #ifdef USE_DHT
   webpage += "[ DHT";
   webpage += DHTTYPE;
   webpage += " ] - INDOOR<br>";
-  if (dht22get == 0) {
+  if (dhtGet == 0) {
   webpage += "    - ";
   webpage += "Temperature: ";
-  webpage += dht22cTemp;
+  webpage += dhtCTemp;
   webpage += " 'C ( ";
-  webpage += dht22fTemp;
+  webpage += dhtFTemp;
   webpage += " 'F )<br>";
   webpage += "    - ";
   webpage += "Humidity: ";
-  webpage += dht22Humidity;
+  webpage += dhtHumidity;
   webpage += " %<br>";
   } else {
   webpage += "    - <font color='red'>Sensor error or disconnected</font><br>";
@@ -557,6 +822,8 @@ void update_webpage() {
   webpage += "- Voltage: ";
   webpage += bat_level_int;
   webpage += " Volt (Internal)<br>";
+#ifdef USE_LED_MATRIX
+/*
   webpage += "<hr>";  // ===========================================================
   webpage += "[ LED Matrix Status ]<br>";
   webpage += "    - Clock: ";
@@ -608,6 +875,8 @@ void update_webpage() {
   int updateTimeCount = UPDATE_TIME_COUNT * 0.75;
   webpage += updateTimeCount;
   webpage += " minute<br>";
+ */
+#endif
   webpage += "<hr>";  // ===========================================================
   webpage += "[ Clock ]<br>";
   webpage += "    - Coordinated Universal Time(UTC): ";
@@ -615,17 +884,17 @@ void update_webpage() {
   webpage += "<br>";
   webpage += "    - AM-PM Mode: ";
   if (am_pm == 12) {
-  webpage += "On, 12-hour clock<br>";
+    webpage += "On, 12-hour clock<br>";
   } else {
-  webpage += "Off, 24-hour clock<br>";
+    webpage += "Off, 24-hour clock<br>";
   }
-  webpage += "    - Alarm Setting Status: ";
+    webpage += "    - Alarm Setting Status: ";
   if (alarm_state == 1) {
-  webpage += "On<br>";
+    webpage += "On<br>";
   } else {
-  webpage += "Off<br>";
+    webpage += "Off<br>";
   }
-  webpage += "    - Alarm Time: ";
+    webpage += "    - Alarm Time: ";
   if (onTimeAlarm == 1) {
     webpage += "On-Time";
   } else {
@@ -636,6 +905,29 @@ void update_webpage() {
     }
   }
   webpage += "<br>";
+#ifdef USE_TIMER
+  webpage += "[ Timer ]<br>";
+    webpage += "    - Timer Setting Status: ";
+  if (timer_state == 1) {
+    webpage += "On<br>";
+  } else {
+    webpage += "Off<br>";
+  }
+  webpage += "      - Start Time: ";
+  if (am_pm == 12) {
+    webpage += String(timer_start_ampm_select) + " " + String(timer_h_start) + ":" + String(timer_m_start);
+  } else {
+    webpage += String(timer_h_start) + ":" + String(timer_m_start);
+  }
+  webpage += "<br>";
+  webpage += "      - Stop Time: ";
+  if (am_pm == 12) {
+    webpage += String(timer_stop_ampm_select) + " " + String(timer_h_stop) + ":" + String(timer_m_stop);
+  } else {
+    webpage += String(timer_h_stop) + ":" + String(timer_m_stop);
+  }
+  webpage += "<br>";
+#endif
   webpage += "          </td>";
   webpage += "        </tr>";
   webpage += "      </table>";
@@ -658,6 +950,7 @@ void update_webpage() {
   webpage += "    </div>";
   webpage += "    <div id='jb-footer'>";
   webpage += "      <a style='TEXT-DECORATION: none' href='https://zalophus.tistory.com/' target='_blank'>Copyright &copy; 2012 Zalophus's DesignHouse All rights reserved.</a>";
+  webpage += "     [<a style='TEXT-DECORATION: none' href='https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station' target='_blank'>GitHub</a>]";
   webpage += "    </div>";
   webpage += "  </div>";
   webpage += "</body>";
@@ -665,94 +958,123 @@ void update_webpage() {
 }
 
 void home_page() { 
+#ifdef USE_DS18B20
+  DS18B20_action();
+#endif
+#ifdef USE_DHT
+  DHT_action();
+#endif
+#ifdef USE_DHT12
+  DHT12_action();
+#endif
   update_webpage();
   server.send(200, "text/html", webpage); 
 } 
 
 void weatherSCROLL() {
+#ifdef USE_LED_MATRIX
   LEDMatrix_Date_action();
   LEDMatrix_Weather_action();
+#endif
   home_page();
   delay(waitScroll);
 }
 
 void Clock_On() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Clock On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   Clock = 1;
   home_page();
   delay(waitScroll);
 }
 void Clock_Off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Clock Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   Clock = 0;
   home_page();
   delay(waitScroll);
 }
 void showAnimClock_On() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Show Animation Clock On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   showAnimClockSW = 1;
   home_page();
   delay(waitScroll);
 }
 void showAnimClock_Off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Show Simple Clock On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   showAnimClockSW = 0;
   home_page();
   delay(waitScroll);
 }
 
 void dateScroll_On() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Date Scroll On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   dateScroll = 1;
   home_page();
   delay(waitScroll);
 }
 void dateScroll_Off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Date Scroll Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   dateScroll = 0;
   home_page();
   delay(waitScroll);
 }
 
 void weatherScroll_On() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Weather Scroll On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   weatherScroll = 1;
   home_page();
   delay(waitScroll);
 }
 void weatherScroll_Off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Weather Scroll Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   weatherScroll = 0;
   home_page();
   delay(waitScroll);
 }
 
 void updateDATA() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("   Getting data", 15);
+#endif
   ntpTime();
   getWeatherData();
   delay(waitScroll);
@@ -773,19 +1095,23 @@ void resetAP() {
 }
 
 void OTAmodeOn() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("OTA mode On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   OTAmode = 1;
   home_page();
   delay(waitScroll);
 }
 void OTAmodeOff() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("OTA mode Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
   OTAmode = 0;
   home_page();
   delay(waitScroll);
@@ -817,39 +1143,46 @@ void handle_msg() {
   decodedMsg.replace("%3E", ">");
   decodedMsg.replace("%3F", "?");
   decodedMsg.replace("%40", "@");
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift(decodedMsg.c_str(), stringShiftDelay);
+#endif
   printMsg = decodedMsg;
   home_page();
   delay(waitScroll);
 }
 
 void repeatprintMsg() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift(printMsg.c_str(), stringShiftDelay);
+#endif
   home_page();
   delay(waitScroll);
 }
 
 void inDoor() {
 #ifdef USE_DHT
-  char dht22cTemp[10]    = "";
-  char dht22Humidity[10] = "";
-  dtostrf(dht.readTemperature(), 3, 1, dht22cTemp);
-  dtostrf(dht.readHumidity(), 3, 1, dht22Humidity);
-  if(dht22get == 0) {
+  DHT_action();
+  char dhtCTemp[10]    = "";
+  char dhtHumidity[10] = "";
+  dtostrf(dht.readTemperature(), 3, 1, dhtCTemp);
+  dtostrf(dht.readHumidity(), 3, 1, dhtHumidity);
+  if(dhtGet == 0) {
+#ifdef USE_LED_MATRIX
     printStringWithShift("                ", stringShiftDelay);
     printStringWithShift("INDOOR", stringShiftDelay);
     printStringWithShift("   ", stringShiftDelay);
     printStringWithShift("Temp: ", stringShiftDelay);
-    printStringWithShift(dht22cTemp, stringShiftDelay);
+    printStringWithShift(dhtCTemp, stringShiftDelay);
     printStringWithShift(deg.c_str(), stringShiftDelay);
     printStringWithShift("C", stringShiftDelay);
     printStringWithShift("   ", stringShiftDelay);
     printStringWithShift("Humidity: ", stringShiftDelay);
-    printStringWithShift(dht22Humidity, stringShiftDelay);
+    printStringWithShift(dhtHumidity, stringShiftDelay);
     printStringWithShift("%", stringShiftDelay);
     printStringWithShift("                ", stringShiftDelay);
+#endif
   }
 #endif
   indoor  = 1;
@@ -860,11 +1193,13 @@ void inDoor() {
 
 void outDoor() {
 #ifdef USE_DHT12
+  DHT12_action();
   char dht12cTemp[10]    = "";
   char dht12Humidity[10] = "";
   dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
   dtostrf(dht12.readHumidity(), 3, 1, dht12Humidity);
   if(dht12get == 0) {
+#ifdef USE_LED_MATRIX
     printStringWithShift("                ", stringShiftDelay);
     printStringWithShift("OUTDOOR", stringShiftDelay);
     printStringWithShift("   ", stringShiftDelay);
@@ -877,6 +1212,7 @@ void outDoor() {
     printStringWithShift(dht12Humidity, stringShiftDelay);
     printStringWithShift("%", stringShiftDelay);
     printStringWithShift("                ", stringShiftDelay);
+#endif
   }
 #endif
   indoor  = 0;
@@ -887,12 +1223,14 @@ void outDoor() {
 
 void inDoorScrollOn() {
 #ifdef USE_DHT
-  if (dht22get == 0) {
+#ifdef USE_LED_MATRIX
+  if (dhtGet == 0) {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("INDOOR Scroll On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   }
+#endif
   indoorScroll  = 1;
   home_page();
   delay(waitScroll);
@@ -900,12 +1238,14 @@ void inDoorScrollOn() {
 }
 void inDoorScrollOff() {
 #ifdef USE_DHT
-  if (dht22get == 0) {
+#ifdef USE_LED_MATRIX
+  if (dhtGet == 0) {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("INDOOR Scroll Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   }
+#endif
   indoorScroll  = 0;
   home_page();
   delay(waitScroll);
@@ -914,12 +1254,14 @@ void inDoorScrollOff() {
 
 void outDoorScrollOn() {
 #ifdef USE_DHT12
+#ifdef USE_LED_MATRIX
   if (dht12get == 0) {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("OUTDOOR Scroll On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   }
+#endif
   outdoorScroll = 1;
   home_page();
   delay(waitScroll);
@@ -927,12 +1269,14 @@ void outDoorScrollOn() {
 }
 void outDoorScrollOff() {
 #ifdef USE_DHT12
+#ifdef USE_LED_MATRIX
   if (dht12get == 0) {
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("OUTDOOR Scroll Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
   }
+#endif
   outdoorScroll = 0;
   home_page();
   delay(waitScroll);
@@ -940,29 +1284,81 @@ void outDoorScrollOff() {
 }
 
 void alarm16on() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
-  printStringWithShift("Alarm Turn On", stringShiftDelay);
-  digitalWrite(RED_PIN, HIGH);
+  printStringWithShift("Alarm On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
+  digitalWrite(RED_PIN, HIGH);
+  alarm_state = 1;
   home_page();
   delay(waitScroll);
 }
 void alarm16off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
-  printStringWithShift("Alarm Turn Off", stringShiftDelay);
-  digitalWrite(RED_PIN,  LOW);
+  printStringWithShift("Alarm Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
+  digitalWrite(RED_PIN,  LOW);
+  alarm_state = 0;
   home_page();
   delay(waitScroll);
 }
 
+#if defined(DEV_BOARD_Witty) || defined(DEV_BOARD_WiFi_RELAY_MODULE)
+  #ifdef USE_LIGHT
+void light05on() {
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Light Turn On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+#ifdef DEV_BOARD_Witty
+  digitalWrite(USE_LIGHT_PIN, HIGH);
+#endif
+#ifdef DEV_BOARD_WiFi_RELAY_MODULE
+  digitalWrite(USE_INPUT_PIN, HIGH);
+#endif
+  light05on_state = 1;
+  home_page();
+  delay(waitScroll);
+}
+void light05off() {
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Light Turn Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+#ifdef DEV_BOARD_Witty
+  digitalWrite(USE_LIGHT_PIN,  LOW);
+#endif
+#ifdef DEV_BOARD_WiFi_RELAY_MODULE
+  digitalWrite(USE_INPUT_PIN,  LOW);
+#endif
+  light05on_state = 0;
+  home_page();
+  delay(waitScroll);
+}
+  #endif
+#endif
+
 void lamp00on() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
   digitalWrite(GREEN_PIN, HIGH);
-#ifdef   USE_RGB_LED
+#ifdef   USE_RGB_LED_DIRECT
+  digitalWrite(RGB_LED_RED_PIN, HIGH); digitalWrite(RGB_LED_GREEN_PIN, HIGH); digitalWrite(RGB_LED_BLUE_PIN, HIGH);
+#endif
+#ifdef   USE_RGB_LED_NEOPIXEL
   button00count++;
   if (button00count == 1) {
     colorWipe(strip.Color(255, 255, 255), 10);     // White
@@ -983,56 +1379,119 @@ void lamp00on() {
     rainbowCycle(20);
   } else if (button00count == 6) {
     theaterChaseRainbow(30);
-    button00count == 0;
+    button00count = 0;
   }
 #endif
-  delay(waitScroll);
-  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 void lamp00off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Lamp Turn Off", stringShiftDelay);
-  digitalWrite(GREEN_PIN,  LOW);  
-#ifdef   USE_RGB_LED
-    colorWipe(strip.Color(  0,   0,   0),  10);
-#endif
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
+  digitalWrite(GREEN_PIN,  LOW);  
+#ifdef   USE_RGB_LED_DIRECT
+  digitalWrite(RGB_LED_RED_PIN, LOW); digitalWrite(RGB_LED_GREEN_PIN, LOW); digitalWrite(RGB_LED_BLUE_PIN, LOW);
+#endif
+#ifdef   USE_RGB_LED_NEOPIXEL
+    colorWipe(strip.Color(  0,   0,   0),  10);
+#endif
   home_page();
   delay(waitScroll);
 }
 
 void scroll12on() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
-  printStringWithShift("Scroll Turn On", stringShiftDelay);
-  digitalWrite(BLUE_PIN, HIGH);
+  printStringWithShift("Scroll On", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
+  dateScroll = 1;
+#ifdef   USE_DHT
+  indoorScroll = 1;
+#endif
+#ifdef   USE_DHT12
+  outdoorScroll = 1;
+#endif
+  weatherScroll = 1;
   home_page();
   delay(waitScroll);
 }
 void scroll12off() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
-  printStringWithShift("Scroll Turn Off", stringShiftDelay);
-  digitalWrite(BLUE_PIN,  LOW);
+  printStringWithShift("Scroll Off", stringShiftDelay);
   delay(waitScroll);
   printStringWithShift("                ", stringShiftDelay);
+#endif
+  dateScroll = 0;
+#ifdef USE_DHT
+  indoorScroll = 0;
+#endif
+#ifdef USE_DHT12
+  outdoorScroll = 0;
+#endif
+  weatherScroll = 0;
   home_page();
   delay(waitScroll);
 }
 
+#ifdef USE_RGB_LED_NEOPIXEL
+// NeoPixel ====================================================================
+void ledRed()                 { colorWipe(strip.Color(255,   0,   0), 20); home_page(); delay(waitScroll); }  // Red
+void ledGreen()               { colorWipe(strip.Color(  0, 255,   0), 20); home_page(); delay(waitScroll); }  // Green
+void ledBlue()                { colorWipe(strip.Color(  0,   0, 255), 20); home_page(); delay(waitScroll); }  // Blue
+void ledWhite()               { colorWipe(strip.Color(255, 255, 255), 20); home_page(); delay(waitScroll); }  // White
+void ledBlank()               { colorWipe(strip.Color(  0,   0,   0), 20); home_page(); delay(waitScroll); }  // Blank
+#endif
+
+// RGB LED Direct ==============================================================
+#ifdef USE_RGB_LED_DIRECT
+void ledDirectRed()   { digitalWrite(RGB_LED_RED_PIN,   HIGH); digitalWrite(RGB_LED_GREEN_PIN,  LOW); digitalWrite(RGB_LED_BLUE_PIN,   LOW); home_page(); delay(waitScroll); }  // Red
+void ledDirectGreen() { digitalWrite(RGB_LED_RED_PIN,    LOW); digitalWrite(RGB_LED_GREEN_PIN, HIGH); digitalWrite(RGB_LED_BLUE_PIN,   LOW); home_page(); delay(waitScroll); }  // Green
+void ledDirectBlue()  { digitalWrite(RGB_LED_RED_PIN,    LOW); digitalWrite(RGB_LED_GREEN_PIN,  LOW); digitalWrite(RGB_LED_BLUE_PIN,  HIGH); home_page(); delay(waitScroll); }  // Blue
+void ledDirectWhite() {  // White
+  digitalWrite(RGB_LED_RED_PIN,   HIGH);
+  digitalWrite(RGB_LED_GREEN_PIN, HIGH);
+  digitalWrite(RGB_LED_BLUE_PIN,  HIGH);
+  home_page();
+  delay(waitScroll);
+}
+void ledDirectBlank() {  // Blank
+  digitalWrite(RGB_LED_RED_PIN,    LOW);
+  digitalWrite(RGB_LED_GREEN_PIN,  LOW);
+  digitalWrite(RGB_LED_BLUE_PIN,   LOW);
+  home_page();
+  delay(waitScroll);
+}
+#endif
+
+// RGB LED Strip Driver ========================================================
+#ifdef USE_RGB_LED_STRIP_DRIVER
+void ledStripRed()    { led.setColor(255,   0,   0); home_page(); delay(waitScroll); }  // Red
+void ledStripGreen()  { led.setColor(  0, 255,   0); home_page(); delay(waitScroll); }  // Green
+void ledStripBlue()   { led.setColor(  0,   0, 255); home_page(); delay(waitScroll); }  // Blue
+void ledStripWhite()  { led.setColor(255, 255, 255); home_page(); delay(waitScroll); }  // White
+void ledStripBlank()  { led.setColor();              home_page(); delay(waitScroll); }  // Blank
+#endif
+
 void ampmOnOff() {  // AM-PM Mode, 24: 24-hour clock, 12: 12-hour clock
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   if (am_pm == 12) {
-    am_pm = 24;
     printStringWithShift("AM-PM Mode Off", stringShiftDelay);
   } else {
-    am_pm = 12;
     printStringWithShift("AM-PM Mode On", stringShiftDelay);
   }
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
   if (am_pm == 12) {
+    am_pm = 24;
     if (alarm_h_set > 12) {
       alarm_h_set = alarm_h_set - 12;
       alarm_ampm_select = "PM";
@@ -1040,6 +1499,7 @@ void ampmOnOff() {  // AM-PM Mode, 24: 24-hour clock, 12: 12-hour clock
       alarm_ampm_select = "AM";
     }
   } else {
+    am_pm = 12;
     if (alarm_ampm_select == "PM") {
       if (alarm_h_set == 12) {
         alarm_h_set = alarm_h_set - 12;
@@ -1048,8 +1508,6 @@ void ampmOnOff() {  // AM-PM Mode, 24: 24-hour clock, 12: 12-hour clock
       }
     }
   }
-  delay(waitScroll);
-  printStringWithShift("                ", stringShiftDelay);
   ntpTime();
   home_page();
   delay(waitScroll);
@@ -1062,6 +1520,7 @@ void alarmTime() {
   }
   String alarm_h_time = server.arg("alarm_h_time");
   String alarm_m_time = server.arg("alarm_m_time");
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("The alarm is set to ", stringShiftDelay);
   if (am_pm == 12) {
@@ -1071,49 +1530,140 @@ void alarmTime() {
   printStringWithShift(alarm_h_time.c_str(), stringShiftDelay);
   printStringWithShift(":", stringShiftDelay);
   printStringWithShift(alarm_m_time.c_str(), stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
   if (am_pm == 12) {
     alarm_ampm_select = ampm_select;
   }
   alarm_h_set = alarm_h_time.toInt();
   alarm_m_set = alarm_m_time.toInt();
   onTimeAlarm = 0;
-  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
 void onTimeALARM() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("On-time Alarm Setting", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
   onTimeAlarm = 1;
   alarm_h_set = 00;
   alarm_m_set = 00;
-  delay(waitScroll);
-  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
 void alarmOnOff() {
+#ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("Alarm Setting", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
   if (alarm_state == 0) {
     alarm_state = 1;
   } else {
     alarm_state = 0;
   }
-  delay(waitScroll);
-  printStringWithShift("                ", stringShiftDelay);
   home_page();
   delay(waitScroll);
 }
 
+#ifdef USE_TIMER
+void timerStart() {
+  String ampm_select;
+  if (am_pm == 12) {
+    ampm_select  = server.arg("ampm");
+  }
+  String timer_h_time = server.arg("timer_h_time");
+  String timer_m_time = server.arg("timer_m_time");
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("The timer is set to start ", stringShiftDelay);
+  if (am_pm == 12) {
+    printStringWithShift(ampm_select.c_str(), stringShiftDelay);
+    printStringWithShift(" ", stringShiftDelay);
+  }
+  printStringWithShift(timer_h_time.c_str(), stringShiftDelay);
+  printStringWithShift(":", stringShiftDelay);
+  printStringWithShift(timer_m_time.c_str(), stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+  if (am_pm == 12) {
+    timer_start_ampm_select = ampm_select;
+  }
+  timer_h_start = timer_h_time.toInt();
+  timer_m_start = timer_m_time.toInt();
+  home_page();
+  delay(waitScroll);
+}
+void timerStop() {
+  String ampm_select;
+  if (am_pm == 12) {
+    ampm_select  = server.arg("ampm");
+  }
+  String timer_h_time = server.arg("timer_h_time");
+  String timer_m_time = server.arg("timer_m_time");
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("The timer is set to stop ", stringShiftDelay);
+  if (am_pm == 12) {
+    printStringWithShift(ampm_select.c_str(), stringShiftDelay);
+    printStringWithShift(" ", stringShiftDelay);
+  }
+  printStringWithShift(timer_h_time.c_str(), stringShiftDelay);
+  printStringWithShift(":", stringShiftDelay);
+  printStringWithShift(timer_m_time.c_str(), stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+  if (am_pm == 12) {
+    timer_stop_ampm_select = ampm_select;
+  }
+  timer_h_stop = timer_h_time.toInt();
+  timer_m_stop = timer_m_time.toInt();
+  home_page();
+  delay(waitScroll);
+}
+void timerOn() {
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Timer On", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+  //digitalWrite(WHITE_PIN, HIGH);
+  timer_state = 1;
+  home_page();
+  delay(waitScroll);
+}
+void timerOff() {
+#ifdef USE_LED_MATRIX
+  printStringWithShift("                ", stringShiftDelay);
+  printStringWithShift("Timer Off", stringShiftDelay);
+  delay(waitScroll);
+  printStringWithShift("                ", stringShiftDelay);
+#endif
+  //digitalWrite(WHITE_PIN, LOW);
+  timer_state = 0;
+  home_page();
+  delay(waitScroll);
+}
+#endif
+
+#ifdef USE_LED_MATRIX
 void button00() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("I love you",                        stringShiftDelay); home_page(); delay(waitScroll); }
 void button01() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Don't get upset",                   stringShiftDelay); home_page(); delay(waitScroll); }
 void button02() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("I'm upset",                         stringShiftDelay); home_page(); delay(waitScroll); }
 void button03() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Catch me if you can",               stringShiftDelay); home_page(); delay(waitScroll); }
 void button04() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("You will never know until you try", stringShiftDelay); home_page(); delay(waitScroll); }
 void button05() { printStringWithShift("                ", stringShiftDelay); printStringWithShift("Pain past is pleasure",             stringShiftDelay); home_page(); delay(waitScroll); }
+#endif
 
 // Web Server Start ========================================================
 void Webserver_setup() {
@@ -1154,20 +1704,53 @@ void Webserver_setup() {
   server.on("/inDoorScrollOff",    inDoorScrollOff);
   server.on("/outDoorScrollOn",    outDoorScrollOn);
   server.on("/outDoorScrollOff",  outDoorScrollOff);
-
-  server.on("/alarm16on",                           alarm16on);
-  server.on("/alarm16off",                         alarm16off);
-  server.on("/lamp00on",                             lamp00on);
-  server.on("/lamp00off",                           lamp00off);
-  server.on("/scroll12on",                         scroll12on);
-  server.on("/scroll12off",                       scroll12off);
-
+#ifdef USE_TIMER
+  server.on("/timerStart",              timerStart);
+  server.on("/timerStop",                timerStop);
+  server.on("/timerOn",                    timerOn);
+  server.on("/timerOff",                  timerOff);
+#endif
+#if defined(DEV_BOARD_Witty) || defined(DEV_BOARD_WiFi_RELAY_MODULE)
+  #ifdef USE_LIGHT
+  server.on("/light05on",                light05on);
+  server.on("/light05off",              light05off);
+  #endif
+#endif
+  server.on("/alarm16on",                alarm16on);
+  server.on("/alarm16off",              alarm16off);
+  server.on("/lamp00on",                  lamp00on);
+  server.on("/lamp00off",                lamp00off);
+  server.on("/scroll12on",              scroll12on);
+  server.on("/scroll12off",            scroll12off);
+#ifdef USE_LED_MATRIX
   server.on("/button00",                  button00);
   server.on("/button01",                  button01);
   server.on("/button02",                  button02);
   server.on("/button03",                  button03);
   server.on("/button04",                  button04);
   server.on("/button05",                  button05);
+#endif
+#ifdef USE_RGB_LED_NEOPIXEL
+  server.on("/ledRed",                                 ledRed);
+  server.on("/ledGreen",                             ledGreen);
+  server.on("/ledBlue",                               ledBlue);
+  server.on("/ledWhite",                             ledWhite);
+  server.on("/ledBlank",                             ledBlank);
+#endif
+#ifdef USE_RGB_LED_DIRECT
+  server.on("/ledDirectRed",          ledDirectRed);
+  server.on("/ledDirectGreen",      ledDirectGreen);
+  server.on("/ledDirectBlue",        ledDirectBlue);
+  server.on("/ledDirectWhite",      ledDirectWhite);
+  server.on("/ledDirectBlank",      ledDirectBlank);
+#endif
+#ifdef USE_RGB_LED_STRIP_DRIVER
+  server.on("/ledStripRed",            ledStripRed);
+  server.on("/ledStripGreen",        ledStripGreen);
+  server.on("/ledStripBlue",          ledStripBlue);
+  server.on("/ledStripWhite",        ledStripWhite);
+  server.on("/ledStripBlank",        ledStripBlank);
+#endif
 }
 
 void Webserver_action() {

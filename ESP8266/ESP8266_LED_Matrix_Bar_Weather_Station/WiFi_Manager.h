@@ -19,6 +19,7 @@
 uint8_t    MAC_array[6];                  // MAC address of Wifi module
 char       MAC_char[18];
 char       *APname;
+char       *mDNS_Name = mDNS_NAME;
 
 void WiFiManager_setup() {
   // Local intialization. Once its business is done, there is no need to keep it around
@@ -36,7 +37,7 @@ void WiFiManager_setup() {
 #ifdef USE_UART
   Serial.println("\nStarting WIFI in SOFTAP mode");
 #endif
-  APname = "LEDMatrixBar-XXXXXX";
+  APname = mDNS_Name;
   WiFi.macAddress(MAC_array);
   for (int i = 0; i < sizeof(MAC_array); ++i){
     sprintf(MAC_char, "%s%02x:", MAC_char, MAC_array[i]);

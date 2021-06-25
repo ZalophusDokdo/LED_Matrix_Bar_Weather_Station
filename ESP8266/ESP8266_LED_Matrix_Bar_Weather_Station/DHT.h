@@ -18,53 +18,53 @@
 
 DHT   dht(DHTPIN, DHTTYPE);
 
-int   dht22get       = 0;
-float dht22Humidity;
-float dht22cTemp;
-float dht22fTemp;
+int   dhtGet       = 0;
+float dhtHumidity;
+float dhtCTemp;
+float dhtFTemp;
 
-void DHT22_setup() {
+void DHT_setup() {
   dht.begin();
 }
 
-void DHT22_action() {
+void DHT_action() {
   // DHT22 Temperature & Humidity Sensor
   // Wait a few seconds between measurements.
-  // delay(2000);
+  delay(2000);
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  dht22Humidity = dht.readHumidity();
+  dhtHumidity = dht.readHumidity();
   // Read temperature as Celsius (the default)
-  dht22cTemp    = dht.readTemperature();
+  dhtCTemp    = dht.readTemperature();
   // Read temperature as Fahrenheit (isFahrenheit = true)
-  dht22fTemp    = dht.readTemperature(true);
+  dhtFTemp    = dht.readTemperature(true);
 
   // Check if any reads failed and exit early (to try again).
-  if (isnan(dht22Humidity) || isnan(dht22cTemp) || isnan(dht22fTemp)) {
+  if (isnan(dhtHumidity) || isnan(dhtCTemp) || isnan(dhtFTemp)) {
 #ifdef USE_UART
     Serial.println("Failed to read from DHT sensor!");
     Serial.println();
 #endif
-    dht22get = 1;
+    dhtGet = 1;
     return;
   } else {
-    dht22get = 0;
+    dhtGet = 0;
 
     // Compute heat index in Fahrenheit (the default)
-    float hif = dht.computeHeatIndex(dht22fTemp, dht22Humidity);
+    float hif = dht.computeHeatIndex(dhtFTemp, dhtHumidity);
     // Compute heat index in Celsius (isFahreheit = false)
-    float hic = dht.computeHeatIndex(dht22cTemp, dht22Humidity, false);
+    float hic = dht.computeHeatIndex(dhtCTemp, dhtHumidity, false);
 
 #ifdef USE_UART
-    Serial.println("DHT22 Temperature & Humidity Sensor (D4 - 2)");
+    Serial.println("DHT Temperature & Humidity Sensor (D4 - 2)");
     Serial.print("Temperature in Celsius : ");
-    Serial.print(dht22cTemp, 1);
+    Serial.print(dhtCTemp, 1);
     Serial.println(" 'C ");
     Serial.print("Temperature in Fahrenheit : ");
-    Serial.print(dht22fTemp, 1);
+    Serial.print(dhtFTemp, 1);
     Serial.println(" 'F\t");
     Serial.print("Relative Humidity: ");
-    Serial.print(dht22Humidity, 1);
+    Serial.print(dhtHumidity, 1);
     Serial.println(" %\t");
     Serial.print("Heat index: ");
     Serial.print(hic);

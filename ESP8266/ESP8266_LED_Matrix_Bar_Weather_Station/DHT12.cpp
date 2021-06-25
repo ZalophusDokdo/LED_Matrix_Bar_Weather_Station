@@ -5,13 +5,13 @@
  * =========================================================================
  *  LED Matrix Bar Weather Station V1.0.4 (Publish: 2018/01/02)
  * =========================================================================
- *  DHT12 temperature and humidity sensor
+ *  DHT12 temperature and humidity sensor library
  *  MIT license
  *  written by Renzo Mischianti
  * =========================================================================
  */
 
-#include "DHT12.h"
+#include "DHT12Driver.h"
 #include "Wire.h"
 
 // Default is i2c on default pin with default DHT12 adress

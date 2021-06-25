@@ -9,8 +9,8 @@
  * =========================================================================
  */
 
-#ifndef WS2812B_H
-#define WS2812B_H
+#ifndef WS2812B_NEOPIXEL_H
+#define WS2812B_NEOPIXEL_H
 
 #include <Adafruit_NeoPixel.h>
 
@@ -112,12 +112,12 @@ void theaterChaseRainbow(uint8_t wait) {
   }
 }
 
-void RGB_LED_setup() {
+void NeoPixel_setup() {
   strip.begin();
   strip.show();  // Initialize all pixels to 'off'
 }
 
-void RGB_LED_action() {
+void NeoPixel_action() {
   // WS2812B RGB LED
   // Some example procedures showing how to display to the pixels:
 #ifdef USE_UART
