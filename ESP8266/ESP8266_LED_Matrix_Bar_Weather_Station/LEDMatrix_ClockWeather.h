@@ -389,12 +389,14 @@ void LEDMatrix_ClockWeather_setup() {
 
 #ifdef USE_DHT
 void LEDMatrix_DHT_action() {
+  DHT_action();
   char dhtCTemp[10]    = "";
   char dhtHumidity[10] = "";
   dtostrf(dht.readTemperature(), 3, 1, dhtCTemp);
   dtostrf(dht.readHumidity(), 3, 1, dhtHumidity);
   String deg = String(char('~'+25));
   if(dhtGet == 0) {
+  #ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("INDOOR", stringShiftDelay);
   printStringWithShift("   ", stringShiftDelay);
@@ -407,17 +409,20 @@ void LEDMatrix_DHT_action() {
   printStringWithShift(dhtHumidity, stringShiftDelay);
   printStringWithShift("%   ", stringShiftDelay);
   printStringWithShift("                ", stringShiftDelay);
+  #endif
   }
 }
 #endif
 #ifdef USE_DHT12
 void LEDMatrix_DHT12_action() {
+  DHT12_action();
   char dht12cTemp[10]    = "";
   char dht12Humidity[10] = "";
   dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
   dtostrf(dht12.readHumidity(), 3, 1, dht12Humidity);
   String deg = String(char('~'+25));
   if(dht12get == 0) {
+  #ifdef USE_LED_MATRIX
   printStringWithShift("                ", stringShiftDelay);
   printStringWithShift("OUTDOOR", stringShiftDelay);
   printStringWithShift("   ", stringShiftDelay);
@@ -430,6 +435,7 @@ void LEDMatrix_DHT12_action() {
   printStringWithShift(dht12Humidity, stringShiftDelay);
   printStringWithShift("%   ", stringShiftDelay);
   printStringWithShift("                ", stringShiftDelay);
+  #endif
   }
 }
 #endif

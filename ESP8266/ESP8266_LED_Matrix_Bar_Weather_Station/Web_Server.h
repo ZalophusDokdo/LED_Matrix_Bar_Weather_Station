@@ -795,7 +795,7 @@ void update_webpage() {
   }
 #endif
 #ifdef USE_DHT12
-  webpage += "[ DHT12 ] - OUTDOOR<br>";
+  webpage += "[ DHT12 ] - " + webInternalTempTitle + "<br>";
   if (dht12get == 0) {
   webpage += "    - ";
   webpage += "Temperature: ";
@@ -1163,27 +1163,7 @@ void repeatprintMsg() {
 
 void inDoor() {
 #ifdef USE_DHT
-  DHT_action();
-  char dhtCTemp[10]    = "";
-  char dhtHumidity[10] = "";
-  dtostrf(dht.readTemperature(), 3, 1, dhtCTemp);
-  dtostrf(dht.readHumidity(), 3, 1, dhtHumidity);
-  if(dhtGet == 0) {
-#ifdef USE_LED_MATRIX
-    printStringWithShift("                ", stringShiftDelay);
-    printStringWithShift("INDOOR", stringShiftDelay);
-    printStringWithShift("   ", stringShiftDelay);
-    printStringWithShift("Temp: ", stringShiftDelay);
-    printStringWithShift(dhtCTemp, stringShiftDelay);
-    printStringWithShift(deg.c_str(), stringShiftDelay);
-    printStringWithShift("C", stringShiftDelay);
-    printStringWithShift("   ", stringShiftDelay);
-    printStringWithShift("Humidity: ", stringShiftDelay);
-    printStringWithShift(dhtHumidity, stringShiftDelay);
-    printStringWithShift("%", stringShiftDelay);
-    printStringWithShift("                ", stringShiftDelay);
-#endif
-  }
+  LEDMatrix_DHT_action();
 #endif
   indoor  = 1;
   outdoor = 0;
@@ -1193,25 +1173,7 @@ void inDoor() {
 
 void outDoor() {
 #ifdef USE_DHT12
-  DHT12_action();
-  char dht12cTemp[10]    = "";
-  char dht12Humidity[10] = "";
-  dtostrf(dht12.readTemperature(), 3, 1, dht12cTemp);
-  dtostrf(dht12.readHumidity(), 3, 1, dht12Humidity);
-  if(dht12get == 0) {
-#ifdef USE_LED_MATRIX
-    printStringWithShift("                ", stringShiftDelay);
-    printStringWithShift("OUTDOOR", stringShiftDelay);
-    printStringWithShift("   ", stringShiftDelay);
-    printStringWithShift("Temp: ", stringShiftDelay);
-    printStringWithShift(dht12cTemp, stringShiftDelay);
-    printStringWithShift(deg.c_str(), stringShiftDelay);
-    printStringWithShift("C", stringShiftDelay);
-    printStringWithShift("   ", stringShiftDelay);
-    printStringWithShift("Humidity: ", stringShiftDelay);
-    printStringWithShift(dht12Humidity, stringShiftDelay);
-    printStringWithShift("%", stringShiftDelay);
-    printStringWithShift("                ", stringShiftDelay);
+  LEDMatrix_DHT12_action();
 #endif
   }
 #endif
