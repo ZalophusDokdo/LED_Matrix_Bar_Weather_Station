@@ -1175,8 +1175,6 @@ void outDoor() {
 #ifdef USE_DHT12
   LEDMatrix_DHT12_action();
 #endif
-  }
-#endif
   indoor  = 0;
   outdoor = 1;
   home_page();
