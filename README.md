@@ -1,4 +1,4 @@
-# ESP8266 LED Matrix Bar Weather Station (Version 1.0.4)
+# ESP8266 LED Matrix Bar Weather Station
 LED Matrix Bar Weather Station and Clock Massenger
 <p align="center">
 	<a href="https://github.com/ZalophusDokdo/LED_Matrix_Bar_Weather_Station/blob/master/images/LEDMatrixBarWeatherStation-V3_01.png?raw=true">
